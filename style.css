@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0d0d1a">
+<title>CodeWisdom — Os 5 da Sabedoria</title>
+<meta name="description" content="Aprenda programação do zero ao especialista com os 5 da Sabedoria">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon.png">
+
+<!-- CSS -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Open Graph -->
+<meta property="og:title" content="CodeWisdom — Os 5 da Sabedoria">
+<meta property="og:description" content="Do zero ao especialista em programação">
+<meta property="og:type" content="website">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">Code<span>Wisdom</span></div>
+    <div class="header-right">
+      <div class="streak-badge" id="streak-val">🔥 0 dias</div>
+      <div class="xp-badge" id="xp-val">⚡ 0 XP</div>
+    </div>
+  </header>
+
+  <!-- TELA: HOME -->
+  <div class="tela ativa" id="tela-home">
+    <div id="home-content"></div>
+  </div>
+
+  <!-- TELA: TRILHAS -->
+  <div class="tela" id="tela-trilhas">
+    <div id="trilhas-content"></div>
+  </div>
+
+  <!-- TELA: LIÇÃO -->
+  <div class="tela" id="tela-licao">
+    <div id="licao-content"></div>
+  </div>
+
+  <!-- TELA: RANKING (placeholder) -->
+  <div class="tela" id="tela-ranking">
+    <div style="text-align:center;padding:60px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🏆</div>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Ranking</h2>
+      <p style="color:var(--text2)">Em breve! Continue estudando para subir no ranking.</p>
+      <div style="margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px">
+        <div style="font-size:14px;color:var(--text2);margin-bottom:4px">Seu XP atual</div>
+        <div id="rank-xp" style="font-size:36px;font-weight:900;color:var(--purple2)">0 XP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: PERFIL -->
+  <div class="tela" id="tela-perfil">
+    <div id="perfil-content"></div>
+  </div>
+
+  <!-- NAV BOTTOM -->
+  <nav id="nav-bottom">
+    <div class="nav-item ativo" onclick="navegarTela('home')">
+      <span class="ni">🏠</span><span>Início</span>
+    </div>
+    <div class="nav-item" onclick="navegarTela('trilhas')">
+      <span class="ni">🗺️</span><span>Trilhas</span>
+    </div>
+    <div class="nav-item" onclick="navegarTela('ranking');document.getElementById('rank-xp').textContent=estado.xp+' XP'">
+      <span class="ni">🏆</span><span>Ranking</span>
+    </div>
+    <div class="nav-item" onclick="navegarTela('perfil')">
+      <span class="ni">👤</span><span>Perfil</span>
+    </div>
+  </nav>
+
+</div>
+
+<!-- LIÇÕES -->
+<script src="licoes/coruja.js"></script>
+<!-- <script src="licoes/elefante.js"></script> -->
+<!-- <script src="licoes/tartaruga.js"></script> -->
+<!-- <script src="licoes/lobo.js"></script>    -->
+<!-- <script src="licoes/corvo.js"></script>   -->
+<!-- <script src="licoes/leao.js"></script>    -->
+
+<!-- APP -->
+<script src="app.js"></script>
+
+<!-- SERVICE WORKER (PWA offline) -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {})
+}
+</script>
+
+</body>
+</html>
