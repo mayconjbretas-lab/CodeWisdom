@@ -2,13 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0d0d1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CodeWisdom — Os 5 da Sabedoria</title>
 <style>
 /* ============================================================
-   CodeWisdom — Style
-   Dark theme inspirado no design dos mockups
+   CodeWisdom — Style v2
+   Responsivo: mobile-first + desktop adaptado (Duolingo-like)
    ============================================================ */
 
 :root {
@@ -30,205 +33,390 @@
   --yellow: #f59e0b;
   --orange: #ff6b35;
   --blue: #3b82f6;
-  --radius: 14px;
+  --radius: 16px;
+  --nav-h: 64px;
+  --header-h: 56px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Nunito', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   font-size: 15px;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
 
-/* ── LAYOUT GERAL ── */
-#app { display: flex; flex-direction: column; min-height: 100vh; }
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT — sidebar no desktop, nav bottom no mobile
+   ═══════════════════════════════════════════════════════════ */
+#app {
+  display: flex;
+  min-height: 100vh;
+}
 
-/* ── HEADER ── */
+/* SIDEBAR — só aparece no desktop */
+#sidebar {
+  display: none;
+}
+
+/* CONTEÚDO PRINCIPAL */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* HEADER */
 #header {
   background: #1a1a2e;
   border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
+  padding: 0 20px;
+  height: var(--header-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
+  flex-shrink: 0;
 }
-.logo { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.logo { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -0.5px; user-select: none; }
 .logo span { color: var(--purple2); }
-.header-right { display: flex; align-items: center; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
 .xp-badge {
   background: var(--purple);
   color: #fff; font-size: 13px; font-weight: 700;
   padding: 5px 12px; border-radius: 20px;
-  display: flex; align-items: center; gap: 5px;
 }
 .streak-badge {
   background: var(--surface2);
   color: var(--orange); font-size: 13px; font-weight: 700;
   padding: 5px 12px; border-radius: 20px;
-  border: 1px solid var(--border);
-  display: flex; align-items: center; gap: 5px;
+  border: 1px solid rgba(255,107,53,0.2);
 }
 
-/* ── TELAS ── */
-.tela { display: none; flex: 1; padding: 24px 20px 80px; max-width: 720px; margin: 0 auto; width: 100%; }
+/* TELAS */
+.tela {
+  display: none;
+  flex: 1;
+  padding: 20px 16px calc(var(--nav-h) + 20px);
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  animation: fadeIn 0.25s ease;
+}
 .tela.ativa { display: block; }
 
-/* ── TELA INICIAL ── */
+/* NAV BOTTOM — mobile */
+#nav-bottom {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around; align-items: center;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  opacity: 0.4; cursor: pointer; transition: opacity 0.15s;
+  font-size: 10px; font-weight: 600;
+  color: var(--text2); padding: 8px 16px;
+  border-radius: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.ativo { opacity: 1; color: var(--purple2); }
+.nav-item .ni { font-size: 24px; line-height: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   DESKTOP — sidebar lateral estilo Duolingo
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  #app { flex-direction: row; }
+
+  #sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    min-height: 100vh;
+    background: #1a1a2e;
+    border-right: 1px solid var(--border);
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 20px 12px;
+    gap: 4px;
+  }
+
+  .sidebar-logo {
+    font-size: 22px; font-weight: 900; color: #fff;
+    padding: 8px 12px 20px;
+    letter-spacing: -0.5px;
+  }
+  .sidebar-logo span { color: var(--purple2); }
+
+  .sidebar-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px; font-weight: 600;
+    color: var(--text2);
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.ativo { background: rgba(124,111,247,0.15); color: var(--purple2); }
+  .sidebar-item .si { font-size: 22px; }
+
+  .sidebar-divider { height: 1px; background: var(--border); margin: 8px 4px; }
+
+  .sidebar-xp {
+    margin-top: auto;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .sidebar-xp .xp-num { font-size: 22px; font-weight: 900; color: var(--purple2); }
+  .sidebar-xp .xp-lbl { font-size: 11px; color: var(--text3); }
+  .sidebar-xp .streak-num { font-size: 16px; font-weight: 700; color: var(--orange); margin-top: 4px; }
+
+  #main { flex: 1; overflow: hidden; }
+  #header { display: none; } /* no desktop o sidebar substitui o header */
+  #nav-bottom { display: none; } /* no desktop não tem nav bottom */
+
+  .tela {
+    padding: 32px 40px 40px;
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 1200px) {
+  #sidebar { width: 280px; }
+  .tela { max-width: 780px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TELA HOME
+   ═══════════════════════════════════════════════════════════ */
 .home-hero {
   text-align: center;
-  padding: 32px 0 40px;
+  padding: 24px 0 32px;
 }
-.home-hero h1 { font-size: clamp(28px, 6vw, 48px); font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+.home-hero h1 {
+  font-size: clamp(26px, 6vw, 44px);
+  font-weight: 900; letter-spacing: -1px; margin-bottom: 6px;
+}
 .home-hero h1 span { color: var(--purple2); }
-.home-hero p { color: var(--text2); font-size: 16px; margin-bottom: 32px; }
+.home-hero p { color: var(--text2); font-size: 15px; margin-bottom: 28px; }
+
+/* Grid de mascotes */
 .mascot-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 32px;
+  gap: 10px;
+  margin-bottom: 24px;
 }
-@media(min-width:500px) { .mascot-grid { grid-template-columns: repeat(5, 1fr); } }
+@media(min-width: 420px) {
+  .mascot-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+}
 .mascot-btn {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 8px;
+  padding: 12px 6px;
   cursor: pointer;
   transition: all 0.2s;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  color: var(--text2);
-  font-size: 11px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  color: var(--text3);
+  font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.5px;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
-.mascot-btn:hover { border-color: var(--border2); transform: translateY(-3px); color: var(--purple2); }
-.mascot-btn.ativo { border-color: var(--purple); background: rgba(124,111,247,0.1); color: var(--purple2); }
-.mascot-btn.bloqueado { opacity: 0.4; cursor: not-allowed; }
-.mascot-btn .e { font-size: 28px; }
+.mascot-btn:active { transform: scale(0.95); }
+.mascot-btn.ativo {
+  border-color: var(--purple);
+  background: rgba(124,111,247,0.1);
+  color: var(--purple2);
+}
+.mascot-btn.bloqueado { opacity: 0.35; cursor: not-allowed; }
+.mascot-btn .e { font-size: 26px; }
 .progresso-mini {
-  height: 3px; width: 100%; background: var(--surface3); border-radius: 2px; margin-top: 4px; overflow: hidden;
+  height: 3px; width: 100%;
+  background: var(--surface3); border-radius: 2px; overflow: hidden;
 }
-.progresso-mini-fill { height: 100%; background: var(--purple); border-radius: 2px; transition: width 0.5s; }
+.progresso-mini-fill {
+  height: 100%; background: var(--purple);
+  border-radius: 2px; transition: width 0.5s;
+}
 
-/* ── CARD DO ANIMAL SELECIONADO ── */
+/* Card do animal */
 .animal-destaque {
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: 20px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .animal-header {
-  padding: 20px;
-  display: flex; gap: 16px; align-items: center;
+  padding: 18px 20px;
+  display: flex; gap: 14px; align-items: center;
 }
 .animal-avatar {
-  width: 64px; height: 64px; border-radius: 16px;
+  width: 60px; height: 60px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px; flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.15);
+  font-size: 30px; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.1);
 }
-.animal-info h2 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-.animal-info .fase { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-.animal-info .quote { font-size: 13px; color: var(--text3); font-style: italic; }
+.animal-info h2 { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+.animal-info .quote { font-size: 12px; color: var(--text3); font-style: italic; }
 .fase-pill {
   display: inline-block;
   background: rgba(124,111,247,0.15); color: var(--purple2);
-  font-size: 11px; padding: 3px 8px; border-radius: 8px; font-weight: 600;
-  margin-bottom: 6px;
+  font-size: 10px; padding: 3px 8px; border-radius: 8px; font-weight: 700;
+  margin-bottom: 4px; letter-spacing: 0.3px;
 }
 .progresso-barra {
-  padding: 0 20px 16px;
+  padding: 12px 20px 16px;
   border-top: 1px solid var(--border);
-  padding-top: 14px;
 }
-.prog-lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-.prog-track { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
-.prog-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--purple), var(--purple2)); transition: width 0.6s ease; }
+.prog-lbl {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--text2); margin-bottom: 8px;
+}
+.prog-track { height: 10px; background: var(--surface3); border-radius: 5px; overflow: hidden; }
+.prog-fill {
+  height: 100%; border-radius: 5px;
+  background: linear-gradient(90deg, var(--purple), var(--purple2));
+  transition: width 0.6s ease;
+}
 
-/* ── TRILHAS ── */
+/* Trilhas */
 .trilhas-titulo {
   font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text3); padding: 14px 20px 8px; font-weight: 600;
+  color: var(--text3); padding: 12px 20px 6px; font-weight: 700;
 }
 .trilha-card {
   display: flex; gap: 12px; align-items: center;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border-top: 1px solid var(--border);
   cursor: pointer;
   transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.trilha-card:hover:not(.bloqueada) { background: rgba(124,111,247,0.05); }
-.trilha-card.bloqueada { opacity: 0.5; cursor: not-allowed; }
+.trilha-card:active:not(.bloqueada) { background: rgba(124,111,247,0.05); }
+.trilha-card.bloqueada { opacity: 0.45; cursor: not-allowed; }
 .trilha-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
 }
-.trilha-info { flex: 1; }
-.trilha-nome { font-size: 14px; font-weight: 600; }
-.trilha-desc { font-size: 12px; color: var(--text2); }
+.trilha-info { flex: 1; min-width: 0; }
+.trilha-nome { font-size: 14px; font-weight: 700; }
+.trilha-desc { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .trilha-meta { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
-.badge {
-  font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 600;
-}
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 700; }
 .badge-blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
 .badge-green { background: rgba(16,185,129,0.15); color: #6ee7b7; }
 .badge-gray { background: var(--surface3); color: var(--text3); }
 .badge-amber { background: rgba(245,158,11,0.15); color: #fcd34d; }
-.badge-red { background: rgba(239,68,68,0.15); color: #fca5a5; }
 .estrelas { display: flex; gap: 2px; }
-.estrela { font-size: 10px; color: var(--yellow); }
+.estrela { font-size: 11px; color: var(--yellow); }
 .estrela.vazia { color: var(--surface3); }
 
-/* ── NÓS DE LIÇÕES ── */
-.nos-licoes { padding: 16px 20px; border-top: 1px solid var(--border); }
-.nos-titulo { font-size: 11px; color: var(--text3); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-.nos-row { display: flex; align-items: center; }
+/* Nós de lições */
+.nos-licoes { padding: 14px 20px; border-top: 1px solid var(--border); }
+.nos-titulo { font-size: 11px; color: var(--text3); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.nos-row { display: flex; align-items: center; overflow-x: auto; padding-bottom: 4px; }
 .no {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
-  flex-shrink: 0; transition: all 0.2s; cursor: pointer; border: 2px solid transparent;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+  transition: all 0.2s; cursor: pointer;
+  border: 2px solid transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 .no.feito { background: var(--purple); color: #fff; }
-.no.atual { background: #fff; border-color: var(--purple); box-shadow: 0 0 0 4px rgba(124,111,247,0.2); }
-.no.travado { background: var(--surface3); border-color: var(--border); color: var(--text3); cursor: not-allowed; }
-.no-linha { flex: 1; height: 3px; background: var(--border); }
+.no.atual {
+  background: #fff; border-color: var(--purple);
+  box-shadow: 0 0 0 4px rgba(124,111,247,0.25);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(124,111,247,0.25); }
+  50% { box-shadow: 0 0 0 8px rgba(124,111,247,0.1); }
+}
+.no.travado { background: var(--surface3); border-color: var(--border); color: var(--text3); cursor: not-allowed; font-size: 12px; }
+.no-linha { flex: 1; min-width: 12px; height: 3px; background: var(--border); }
 .no-linha.feita { background: var(--purple); }
 
-/* ── TELA DE LIÇÃO ── */
-.licao-header {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 20px;
+/* ═══════════════════════════════════════════════════════════
+   TELA DE LIÇÃO — dinâmica igual Duolingo
+   ═══════════════════════════════════════════════════════════ */
+.licao-wrap {
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - var(--header-h) - var(--nav-h));
 }
-.btn-voltar {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); padding: 8px 14px; border-radius: 10px;
-  cursor: pointer; font-size: 13px; transition: all 0.15s;
-  display: flex; align-items: center; gap: 6px;
+@media(min-width: 768px) {
+  .licao-wrap { min-height: calc(100vh - 48px); }
 }
-.btn-voltar:hover { border-color: var(--border2); color: var(--text); }
-.licao-titulo { font-size: 18px; font-weight: 700; }
-.licao-xp { background: rgba(124,111,247,0.15); color: var(--purple2); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-left: auto; }
 
-/* ETAPAS */
-.etapas { display: flex; gap: 6px; margin-bottom: 20px; }
-.etapa-dot {
-  flex: 1; height: 4px; border-radius: 2px;
-  background: var(--surface3); transition: background 0.3s;
+/* Barra de progresso no topo da lição */
+.licao-top {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px;
 }
-.etapa-dot.ativa { background: var(--purple2); }
-.etapa-dot.feita { background: var(--purple); }
+.btn-fechar {
+  background: none; border: none;
+  color: var(--text3); font-size: 22px;
+  cursor: pointer; padding: 4px;
+  line-height: 1; transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.btn-fechar:hover { color: var(--text); }
+.licao-progress-bar {
+  flex: 1; height: 16px;
+  background: var(--surface3); border-radius: 8px; overflow: hidden;
+}
+.licao-progress-fill {
+  height: 100%; border-radius: 8px;
+  background: linear-gradient(90deg, #58cc02, #89e219);
+  transition: width 0.5s ease;
+}
+.licao-xp-badge {
+  background: rgba(124,111,247,0.15); color: var(--purple2);
+  font-size: 13px; font-weight: 800;
+  padding: 5px 12px; border-radius: 10px; flex-shrink: 0;
+}
 
-/* TEORIA */
+/* Conteúdo da lição */
+.licao-body { flex: 1; }
+
+/* Texto da questão estilo Duolingo */
+.questao-label {
+  font-size: 13px; font-weight: 700;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px;
+}
+.questao-titulo {
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 800; margin-bottom: 24px;
+  line-height: 1.3; white-space: pre-line;
+}
+
+/* Teoria */
 .teoria-box {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -236,64 +424,96 @@ body {
   padding: 20px;
   margin-bottom: 20px;
 }
-.teoria-box h3 { font-size: 16px; margin-bottom: 12px; color: var(--purple2); }
+.teoria-box h3 { font-size: 16px; margin-bottom: 12px; color: var(--purple2); font-weight: 800; }
 .teoria-box p { color: var(--text2); margin-bottom: 12px; font-size: 14px; line-height: 1.7; }
-.teoria-box ul { padding-left: 20px; color: var(--text2); font-size: 14px; }
-.teoria-box li { margin-bottom: 4px; }
+.teoria-box ul { padding-left: 18px; color: var(--text2); font-size: 14px; }
+.teoria-box li { margin-bottom: 5px; }
 .teoria-box strong { color: var(--text); }
-.teoria-box code { background: var(--surface3); padding: 1px 5px; border-radius: 4px; font-size: 13px; color: var(--purple3); }
+.teoria-box em { color: var(--purple3); font-style: normal; font-weight: 600; }
+.teoria-box code {
+  background: var(--surface3); padding: 2px 6px;
+  border-radius: 5px; font-size: 13px; color: var(--purple3);
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
 
-/* CÓDIGO */
+/* Bloco de código */
 .code-example {
-  background: #0a0a18;
-  border: 1px solid var(--border);
+  background: #080816;
+  border: 1px solid rgba(124,111,247,0.2);
+  border-left: 3px solid var(--purple);
   border-radius: 10px;
   padding: 14px 16px;
   font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.9;
   margin: 12px 0;
   overflow-x: auto;
   white-space: pre;
 }
-.c-kw { color: #c792ea; } /* keywords */
-.c-fn { color: #82aaff; } /* functions */
-.c-str { color: #c3e88d; } /* strings */
-.c-num { color: #f78c6c; } /* numbers */
-.c-cm { color: #546e7a; } /* comments */
+.c-kw { color: #c792ea; }
+.c-fn { color: #82aaff; }
+.c-str { color: #c3e88d; }
+.c-num { color: #f78c6c; }
+.c-cm { color: #4a6278; font-style: italic; }
 
-/* EXERCÍCIO */
-.exercicio-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 20px;
+/* Opções de múltipla escolha — estilo Duolingo */
+.opcoes {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 16px;
 }
-.exercicio-num { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.exercicio-pergunta { font-size: 15px; font-weight: 600; margin-bottom: 16px; white-space: pre-line; }
-.opcoes { display: flex; flex-direction: column; gap: 8px; }
 .opcao {
   background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
+  border: 2px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px; font-weight: 600;
   color: var(--text);
   transition: all 0.15s;
   text-align: left;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; gap: 12px;
 }
-.opcao:hover:not(:disabled) { border-color: var(--purple); background: rgba(124,111,247,0.08); }
-.opcao.correta { background: rgba(16,185,129,0.15); border-color: var(--green); color: var(--green2); }
-.opcao.errada { background: rgba(239,68,68,0.15); border-color: var(--red); color: #fca5a5; }
+.opcao::before {
+  content: '';
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border2); flex-shrink: 0;
+  transition: all 0.15s;
+}
+.opcao:hover:not(:disabled) {
+  border-color: var(--purple2);
+  background: rgba(124,111,247,0.08);
+}
+.opcao:active:not(:disabled) { transform: scale(0.98); }
+.opcao.selecionada {
+  border-color: var(--purple2);
+  background: rgba(124,111,247,0.12);
+}
+.opcao.selecionada::before {
+  background: var(--purple2);
+  border-color: var(--purple2);
+}
+.opcao.correta {
+  background: rgba(16,185,129,0.12);
+  border-color: #10b981;
+  color: var(--green2);
+}
+.opcao.correta::before { background: #10b981; border-color: #10b981; }
+.opcao.errada {
+  background: rgba(239,68,68,0.12);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+.opcao.errada::before { background: #ef4444; border-color: #ef4444; }
 .opcao:disabled { cursor: default; }
 
-/* COMPLETAR */
-.completar-wrap { display: flex; flex-direction: column; gap: 12px; }
+/* Completar código */
+.completar-wrap { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 .completar-codigo {
-  background: #0a0a18;
-  border: 1px solid var(--border);
+  background: #080816;
+  border: 1px solid rgba(124,111,247,0.2);
+  border-left: 3px solid var(--purple);
   border-radius: 10px;
   padding: 14px 16px;
   font-family: monospace; font-size: 14px;
@@ -302,126 +522,155 @@ body {
 }
 .completar-input {
   background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 14px;
+  border: 2px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 16px; /* 16px evita zoom no iOS */
   color: var(--text);
   outline: none;
-  font-family: monospace;
+  font-family: 'Fira Code', monospace;
   transition: border-color 0.15s;
+  width: 100%;
 }
-.completar-input:focus { border-color: var(--purple); }
-.completar-input.correta { border-color: var(--green); background: rgba(16,185,129,0.08); }
-.completar-input.errada { border-color: var(--red); background: rgba(239,68,68,0.08); }
+.completar-input:focus { border-color: var(--purple2); }
+.completar-input.correta { border-color: #10b981; background: rgba(16,185,129,0.08); }
+.completar-input.errada { border-color: #ef4444; background: rgba(239,68,68,0.08); }
 
-/* FEEDBACK */
-.feedback {
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 13px;
-  margin-top: 8px;
+/* Feedback — barra no bottom estilo Duolingo */
+.feedback-bar {
+  position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0));
   display: none;
-  line-height: 1.6;
+  z-index: 90;
+  animation: slideUp 0.2s ease;
 }
-.feedback.visivel { display: block; }
-.feedback.ok { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--green2); }
-.feedback.erro { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-.feedback strong { display: block; margin-bottom: 4px; }
+@media(min-width: 768px) {
+  .feedback-bar { position: static; border-radius: var(--radius); margin-top: 16px; }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.feedback-bar.visivel { display: block; }
+.feedback-bar.ok {
+  background: rgba(16,185,129,0.15);
+  border-top: 2px solid #10b981;
+}
+.feedback-bar.erro {
+  background: rgba(239,68,68,0.12);
+  border-top: 2px solid #ef4444;
+}
+@media(min-width: 768px) {
+  .feedback-bar.ok { border: 2px solid #10b981; border-top: 2px solid #10b981; }
+  .feedback-bar.erro { border: 2px solid #ef4444; }
+}
+.feedback-titulo {
+  font-size: 16px; font-weight: 800; margin-bottom: 4px;
+}
+.feedback-bar.ok .feedback-titulo { color: var(--green2); }
+.feedback-bar.erro .feedback-titulo { color: #fca5a5; }
+.feedback-texto { font-size: 13px; color: var(--text2); line-height: 1.6; }
 
-/* BOTÕES */
-.btn {
-  padding: 13px 24px;
-  border-radius: 12px;
-  font-size: 14px; font-weight: 700;
-  border: none; cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex; align-items: center; gap: 8px;
+/* Botão de ação — fixo no bottom estilo Duolingo */
+.licao-footer {
+  position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0));
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  z-index: 80;
 }
-.btn-primario {
+@media(min-width: 768px) {
+  .licao-footer { position: static; background: none; border: none; padding: 20px 0 0; }
+}
+.btn-acao {
+  width: 100%; padding: 16px;
+  border-radius: var(--radius);
+  font-size: 16px; font-weight: 800;
+  border: none; cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-acao.verificar {
   background: linear-gradient(135deg, var(--purple), var(--purple2));
   color: #fff;
-  box-shadow: 0 4px 16px rgba(124,111,247,0.35);
-  width: 100%;
-  justify-content: center;
-  margin-top: 12px;
+  box-shadow: 0 4px 0 #5a4fd6;
 }
-.btn-primario:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,111,247,0.45); }
-.btn-primario:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.btn-secundario {
-  background: var(--surface2);
-  color: var(--text2);
-  border: 1px solid var(--border2);
-  width: 100%;
-  justify-content: center;
-  margin-top: 8px;
+.btn-acao.verificar:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a4fd6; }
+.btn-acao.verificar:disabled {
+  background: var(--surface3); color: var(--text3);
+  box-shadow: none; cursor: not-allowed;
 }
-.btn-secundario:hover { background: var(--surface3); color: var(--text); }
-
-/* XP POPUP */
-.xp-popup {
-  position: fixed;
-  top: 70px; right: 20px;
-  background: var(--purple);
+.btn-acao.continuar {
+  background: #58cc02;
   color: #fff;
-  padding: 10px 18px;
-  border-radius: 20px;
-  font-weight: 700; font-size: 14px;
+  box-shadow: 0 4px 0 #3ea800;
+}
+.btn-acao.continuar:active { transform: translateY(2px); box-shadow: 0 2px 0 #3ea800; }
+.btn-acao.teoria {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  color: #fff;
+  box-shadow: 0 4px 0 #5a4fd6;
+}
+.btn-acao.teoria:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a4fd6; }
+
+/* XP Popup */
+.xp-popup {
+  position: fixed; top: 80px; right: 20px;
+  background: var(--purple);
+  color: #fff; padding: 10px 18px;
+  border-radius: 20px; font-weight: 800; font-size: 14px;
   animation: popUp 2s forwards;
-  pointer-events: none;
-  z-index: 999;
+  pointer-events: none; z-index: 999;
+  box-shadow: 0 4px 16px rgba(124,111,247,0.4);
 }
 @keyframes popUp {
   0% { opacity: 0; transform: translateY(10px) scale(0.8); }
-  20% { opacity: 1; transform: translateY(0) scale(1); }
-  70% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-20px); }
+  15% { opacity: 1; transform: translateY(0) scale(1.1); }
+  25% { transform: scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-30px); }
 }
 
-/* CONCLUSÃO DE LIÇÃO */
+/* Conclusão de lição */
 .conclusao {
   text-align: center;
-  padding: 40px 20px;
+  padding: 48px 20px 120px;
   animation: fadeIn 0.4s ease;
 }
-.conclusao .trophy { font-size: 64px; margin-bottom: 16px; }
-.conclusao h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-.conclusao p { color: var(--text2); margin-bottom: 24px; }
+.conclusao .trophy { font-size: 72px; margin-bottom: 16px; display: block; }
+.conclusao h2 { font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+.conclusao p { color: var(--text2); margin-bottom: 20px; font-size: 15px; }
 .xp-ganho {
   display: inline-flex; align-items: center; gap: 8px;
   background: rgba(124,111,247,0.15); color: var(--purple2);
-  font-size: 20px; font-weight: 800;
-  padding: 10px 24px; border-radius: 16px; margin-bottom: 24px;
+  font-size: 22px; font-weight: 900;
+  padding: 12px 28px; border-radius: 16px; margin-bottom: 28px;
 }
-.erros-box {
+.erros-resumo {
   background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: left;
+  border-radius: var(--radius); padding: 16px; margin-bottom: 20px; text-align: left;
 }
-.erros-box h4 { color: #fca5a5; font-size: 13px; margin-bottom: 8px; }
-.erros-box li { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+.erros-resumo h4 { color: #fca5a5; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.erros-resumo li { font-size: 13px; color: var(--text2); margin-bottom: 6px; line-height: 1.5; }
 
-/* PERFIL */
-.perfil-stats {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;
-}
+/* Perfil */
+.perfil-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+@media(min-width: 500px) { .perfil-stats { grid-template-columns: repeat(4, 1fr); } }
 .stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px; text-align: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
 }
-.stat-card .num { font-size: 28px; font-weight: 900; color: var(--purple2); }
-.stat-card .lbl { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.stat-card .num { font-size: 26px; font-weight: 900; color: var(--purple2); }
+.stat-card .lbl { font-size: 11px; color: var(--text3); margin-top: 2px; font-weight: 600; }
 .debito-tecnico {
-  background: var(--surface);
-  border: 1px solid rgba(239,68,68,0.2);
-  border-radius: var(--radius);
-  padding: 16px;
+  background: var(--surface); border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius); padding: 16px;
 }
-.debito-tecnico h3 { font-size: 14px; font-weight: 700; color: #fca5a5; margin-bottom: 12px; }
+.debito-tecnico h3 { font-size: 14px; font-weight: 800; color: #fca5a5; margin-bottom: 12px; }
 .debito-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 0; border-bottom: 1px solid var(--border);
+  padding: 10px 0; border-bottom: 1px solid var(--border);
   font-size: 13px; color: var(--text2);
 }
 .debito-item:last-child { border-bottom: none; }
@@ -431,185 +680,1262 @@ body {
   padding: 2px 8px; border-radius: 6px;
 }
 
-/* NAV BOTTOM */
-#nav-bottom {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: space-around;
-  padding: 10px 0 14px;
-  z-index: 100;
-}
-.nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  opacity: 0.45; cursor: pointer; transition: opacity 0.15s;
-  font-size: 10px; color: var(--text2); padding: 0 12px;
-}
-.nav-item.ativo { opacity: 1; color: var(--purple2); }
-.nav-item .ni { font-size: 22px; }
-
-/* ANIMAÇÕES */
+/* Animações */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.fadeIn { animation: fadeIn 0.3s ease; }
+.fadeIn { animation: fadeIn 0.25s ease; }
 
-/* RESPONSIVE */
-@media(max-width: 480px) {
-  .tela { padding: 16px 14px 80px; }
-  .teoria-box, .exercicio-box { padding: 16px; }
+/* Botão voltar */
+.btn-voltar {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); padding: 8px 14px; border-radius: 10px;
+  cursor: pointer; font-size: 13px; transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 20px; font-weight: 600;
 }
+.btn-voltar:hover { border-color: var(--border2); color: var(--text); }
+
+/* Botão genérico */
+.btn {
+  padding: 13px 24px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primario {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  color: #fff; box-shadow: 0 4px 0 #5a4fd6;
+  width: 100%; justify-content: center; margin-top: 12px;
+}
+.btn-primario:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a4fd6; }
+.btn-secundario {
+  background: var(--surface2); color: var(--text2);
+  border: 1px solid var(--border2);
+  width: 100%; justify-content: center; margin-top: 8px;
+}
+.btn-secundario:hover { background: var(--surface3); color: var(--text); }
 
 </style>
 </head>
 <body>
 <div id="app">
-  <header id="header">
-    <div class="logo">Code<span>Wisdom</span></div>
-    <div class="header-right">
-      <div class="streak-badge" id="streak-val">🔥 0 dias</div>
-      <div class="xp-badge" id="xp-val">⚡ 0 XP</div>
-    </div>
-  </header>
-  <div class="tela ativa" id="tela-home"><div id="home-content"></div></div>
-  <div class="tela" id="tela-trilhas"><div id="trilhas-content"></div></div>
-  <div class="tela" id="tela-licao"><div id="licao-content"></div></div>
-  <div class="tela" id="tela-ranking">
-    <div style="text-align:center;padding:60px 20px">
-      <div style="font-size:48px;margin-bottom:16px">🏆</div>
-      <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Ranking</h2>
-      <p style="color:var(--text2)">Em breve! Continue estudando para subir no ranking.</p>
-      <div style="margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px">
-        <div style="font-size:14px;color:var(--text2);margin-bottom:4px">Seu XP atual</div>
-        <div id="rank-xp" style="font-size:36px;font-weight:900;color:var(--purple2)">0 XP</div>
+  <!-- SIDEBAR desktop -->
+  <aside id="sidebar"></aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- HEADER mobile -->
+    <header id="header">
+      <div class="logo">Code<span>Wisdom</span></div>
+      <div class="header-right">
+        <div class="streak-badge" id="streak-val">🔥 0 dias</div>
+        <div class="xp-badge" id="xp-val">⚡ 0 XP</div>
+      </div>
+    </header>
+
+    <!-- TELAS -->
+    <div class="tela ativa" id="tela-home"><div id="home-content"></div></div>
+    <div class="tela" id="tela-trilhas"><div id="trilhas-content"></div></div>
+    <div class="tela" id="tela-licao"><div id="licao-content"></div></div>
+    <div class="tela" id="tela-ranking">
+      <div style="text-align:center;padding:60px 20px">
+        <div style="font-size:64px;margin-bottom:16px">🏆</div>
+        <h2 style="font-size:24px;font-weight:900;margin-bottom:8px">Ranking</h2>
+        <p style="color:var(--text2);margin-bottom:32px">Em breve! Continue estudando para subir.</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:300px;margin:0 auto">
+          <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Seu XP atual</div>
+          <div id="rank-xp" style="font-size:40px;font-weight:900;color:var(--purple2)">0 XP</div>
+        </div>
       </div>
     </div>
+    <div class="tela" id="tela-perfil"><div id="perfil-content"></div></div>
+
+    <!-- NAV BOTTOM mobile -->
+    <nav id="nav-bottom">
+      <div class="nav-item ativo" onclick="navegarTela('home')">
+        <span class="ni">🏠</span><span>Início</span>
+      </div>
+      <div class="nav-item" onclick="navegarTela('trilhas')">
+        <span class="ni">🗺️</span><span>Trilhas</span>
+      </div>
+      <div class="nav-item" onclick="navegarTela('ranking')">
+        <span class="ni">🏆</span><span>Ranking</span>
+      </div>
+      <div class="nav-item" onclick="navegarTela('perfil')">
+        <span class="ni">👤</span><span>Perfil</span>
+      </div>
+    </nav>
   </div>
-  <div class="tela" id="tela-perfil"><div id="perfil-content"></div></div>
-  <nav id="nav-bottom">
-    <div class="nav-item ativo" onclick="navegarTela('home')"><span class="ni">🏠</span><span>Início</span></div>
-    <div class="nav-item" onclick="navegarTela('trilhas')"><span class="ni">🗺️</span><span>Trilhas</span></div>
-    <div class="nav-item" onclick="navegarTela('ranking');document.getElementById('rank-xp').textContent=estado.xp+' XP'"><span class="ni">🏆</span><span>Ranking</span></div>
-    <div class="nav-item" onclick="navegarTela('perfil')"><span class="ni">👤</span><span>Perfil</span></div>
-  </nav>
 </div>
-<script src="licoes/coruja.js"></script>
+
 <script>
 // ============================================================
-// CodeWisdom — app.js
-// Lógica completa: progresso, XP, lições, exercícios
+// CORUJA — Athena | Fase 1: Lógica & Fundamentos
+// 15 lições reais com teoria, exemplos e exercícios
 // ============================================================
 
-// ── ESTADO GLOBAL ────────────────────────────────────────────
+const CORUJA_LICOES = [
+
+  // ── LIÇÃO 1 ──────────────────────────────────────────────
+  {
+    id: 'c1',
+    titulo: 'O que é programação?',
+    xp: 100,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Programação é dar <strong>instruções precisas</strong> para um computador executar.
+      O computador é extremamente obediente — faz exatamente o que você manda —
+      mas é completamente literal. Se você errar uma vírgula, ele não "adivinha" o que você quis dizer.</p>
+
+      <p>Pense assim: você quer fazer um sanduíche. Para um humano basta dizer
+      <em>"faz um sanduíche de queijo"</em> e ele entende. Para um computador você precisa dizer:</p>
+
+      <div class="code-example">
+1. Pegue o pão<br>
+2. Abra o pão ao meio<br>
+3. Coloque o queijo dentro<br>
+4. Feche o pão
+      </div>
+
+      <p>Isso é um <strong>algoritmo</strong> — uma sequência de passos para resolver um problema.</p>
+
+      <p>Linguagens de programação são o idioma que usamos para escrever essas instruções.
+      Python, JavaScript, C++... cada uma tem sua sintaxe, mas todas seguem a mesma ideia.</p>
+    `,
+    exemplo: `
+      <p>Em JavaScript, seu primeiro programa seria assim:</p>
+      <div class="code-example">
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"Olá, mundo!"</span>)
+      </div>
+      <p><code>console.log()</code> manda o computador <em>exibir</em> algo na tela.
+      O texto entre aspas é chamado de <strong>string</strong>.</p>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que é um algoritmo?',
+        opcoes: [
+          'Um tipo de computador',
+          'Uma sequência de passos para resolver um problema',
+          'Uma linguagem de programação',
+          'Um erro no código'
+        ],
+        correta: 1,
+        explicacao: 'Algoritmo é uma sequência ordenada de passos para resolver um problema. Todo programa é baseado em um algoritmo.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'O que o comando console.log() faz?',
+        opcoes: [
+          'Salva um arquivo',
+          'Cria uma variável',
+          'Exibe algo na tela',
+          'Fecha o programa'
+        ],
+        correta: 2,
+        explicacao: 'console.log() exibe (imprime) um valor no console — é a forma mais básica de ver o resultado do seu código.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete o código para exibir "CodeWisdom" na tela:',
+        codigo: 'console.___("CodeWisdom")',
+        resposta: 'log',
+        explicacao: 'console.log() é a função para exibir valores. O nome vem de "registrar no console".'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 2 ──────────────────────────────────────────────
+  {
+    id: 'c2',
+    titulo: 'Variáveis — guardando informações',
+    xp: 100,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Uma <strong>variável</strong> é uma caixinha com nome que guarda um valor.
+      Você cria a caixa, dá um nome a ela, e coloca algo dentro.</p>
+
+      <p>Em JavaScript moderno, usamos <code>let</code> e <code>const</code>:</p>
+
+      <div class="code-example">
+<span class="c-kw">let</span> nome = <span class="c-str">"Maycon"</span>    <span class="c-cm">// pode mudar depois</span><br>
+<span class="c-kw">const</span> idade = <span class="c-num">28</span>         <span class="c-cm">// não muda nunca</span>
+      </div>
+
+      <p><code>let</code> — variável que pode ser alterada depois.<br>
+      <code>const</code> — constante, o valor nunca muda (use sempre que possível).</p>
+
+      <p><strong>Regras de nomenclatura:</strong></p>
+      <ul>
+        <li>Sem espaços: use <code>meuNome</code> (camelCase) ✅</li>
+        <li>Sem acentos nem caracteres especiais ✅</li>
+        <li>Não começa com número ✅</li>
+        <li>Nomes descritivos: <code>idade</code> é melhor que <code>x</code> ✅</li>
+      </ul>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> produto = <span class="c-str">"Gasolina"</span><br>
+<span class="c-kw">let</span> preco = <span class="c-num">5.89</span><br>
+<span class="c-kw">let</span> quantidade = <span class="c-num">40</span><br><br>
+<span class="c-kw">const</span> total = preco * quantidade<br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(total)  <span class="c-cm">// 235.6</span>
+      </div>
+      <p>Variáveis podem guardar textos, números, e muito mais. Aqui calculamos o total de um abastecimento!</p>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual a diferença entre let e const?',
+        opcoes: [
+          'Não há diferença, são iguais',
+          'let pode ser alterado depois, const não pode',
+          'const pode ser alterado, let não pode',
+          'let é para números, const é para textos'
+        ],
+        correta: 1,
+        explicacao: 'let declara variáveis que podem ser reatribuídas. const declara constantes — o valor não pode mudar após a declaração.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual nome de variável está CORRETO?',
+        opcoes: [
+          'meu nome',
+          '1contador',
+          'totalVendas',
+          'total-vendas'
+        ],
+        correta: 2,
+        explicacao: 'totalVendas usa camelCase, sem espaços, sem caracteres especiais e não começa com número. É o padrão correto em JavaScript.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Declare uma constante chamada "pi" com valor 3.14:',
+        codigo: '___ pi = 3.14',
+        resposta: 'const',
+        explicacao: 'Usamos const porque o valor de π nunca muda. Sempre prefira const quando o valor não vai ser alterado.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 3 ──────────────────────────────────────────────
+  {
+    id: 'c3',
+    titulo: 'Tipos de dados',
+    xp: 100,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Cada variável guarda um <strong>tipo</strong> de dado. Em JavaScript os principais são:</p>
+
+      <div class="code-example">
+<span class="c-cm">// String — texto, sempre entre aspas</span><br>
+<span class="c-kw">const</span> nome = <span class="c-str">"Athena"</span><br><br>
+
+<span class="c-cm">// Number — números (inteiros ou decimais)</span><br>
+<span class="c-kw">const</span> idade = <span class="c-num">5</span><br>
+<span class="c-kw">const</span> preco = <span class="c-num">3.99</span><br><br>
+
+<span class="c-cm">// Boolean — verdadeiro ou falso</span><br>
+<span class="c-kw">const</span> ativo = <span class="c-kw">true</span><br>
+<span class="c-kw">const</span> bloqueado = <span class="c-kw">false</span><br><br>
+
+<span class="c-cm">// Array — lista de valores</span><br>
+<span class="c-kw">const</span> frutas = [<span class="c-str">"maçã"</span>, <span class="c-str">"banana"</span>, <span class="c-str">"uva"</span>]<br><br>
+
+<span class="c-cm">// Object — conjunto de propriedades</span><br>
+<span class="c-kw">const</span> posto = { nome: <span class="c-str">"P. Central"</span>, tanques: <span class="c-num">4</span> }
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> usuario = {<br>
+&nbsp;&nbsp;nome: <span class="c-str">"Maycon"</span>,<br>
+&nbsp;&nbsp;nivel: <span class="c-num">1</span>,<br>
+&nbsp;&nbsp;ativo: <span class="c-kw">true</span>,<br>
+&nbsp;&nbsp;conquistas: [<span class="c-str">"Primeira lição"</span>, <span class="c-str">"5 dias seguidos"</span>]<br>
+}<br><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(usuario.nome)   <span class="c-cm">// "Maycon"</span><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(usuario.nivel)  <span class="c-cm">// 1</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual o tipo de dado de: const aprovado = true',
+        opcoes: ['String', 'Number', 'Boolean', 'Array'],
+        correta: 2,
+        explicacao: 'true e false são valores Boolean — representam verdadeiro ou falso. São muito usados para condições e estados.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Como acessar o nome de: const posto = { nome: "Central", tanques: 4 }',
+        opcoes: ['posto[nome]', 'posto.nome', 'posto("nome")', 'nome.posto'],
+        correta: 1,
+        explicacao: 'Usamos ponto (.) para acessar propriedades de um objeto. posto.nome retorna "Central".'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete para acessar o primeiro item do array: const dias = ["Seg","Ter","Qua"]',
+        codigo: 'console.log(dias[___])',
+        resposta: '0',
+        explicacao: 'Arrays começam no índice 0! O primeiro item é [0], o segundo é [1], e assim por diante.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 4 ──────────────────────────────────────────────
+  {
+    id: 'c4',
+    titulo: 'Operadores — calculando e comparando',
+    xp: 100,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Operadores fazem cálculos e comparações. Existem três tipos principais:</p>
+
+      <p><strong>Aritméticos</strong> — para contas:</p>
+      <div class="code-example">
+<span class="c-num">10</span> + <span class="c-num">5</span>   <span class="c-cm">// 15 — soma</span><br>
+<span class="c-num">10</span> - <span class="c-num">3</span>   <span class="c-cm">// 7  — subtração</span><br>
+<span class="c-num">4</span>  * <span class="c-num">3</span>   <span class="c-cm">// 12 — multiplicação</span><br>
+<span class="c-num">10</span> / <span class="c-num">2</span>   <span class="c-cm">// 5  — divisão</span><br>
+<span class="c-num">10</span> % <span class="c-num">3</span>   <span class="c-cm">// 1  — resto da divisão (módulo)</span><br>
+<span class="c-num">2</span>  ** <span class="c-num">3</span>  <span class="c-cm">// 8  — potência (2³)</span>
+      </div>
+
+      <p><strong>Comparação</strong> — retornam true ou false:</p>
+      <div class="code-example">
+<span class="c-num">5</span> === <span class="c-num">5</span>   <span class="c-cm">// true  — igual (valor E tipo)</span><br>
+<span class="c-num">5</span> !== <span class="c-num">3</span>   <span class="c-cm">// true  — diferente</span><br>
+<span class="c-num">10</span> > <span class="c-num">5</span>   <span class="c-cm">// true  — maior que</span><br>
+<span class="c-num">3</span>  < <span class="c-num">7</span>   <span class="c-cm">// true  — menor que</span><br>
+<span class="c-num">5</span> >= <span class="c-num">5</span>   <span class="c-cm">// true  — maior ou igual</span>
+      </div>
+
+      <p><strong>⚠️ IMPORTANTE:</strong> Sempre use <code>===</code> (três iguais) para comparar em JavaScript!
+      O <code>==</code> causa bugs silenciosos porque ignora o tipo.</p>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> tanque = <span class="c-num">15000</span>  <span class="c-cm">// litros</span><br>
+<span class="c-kw">const</span> vendas = <span class="c-num">12500</span>  <span class="c-cm">// litros vendidos</span><br>
+<span class="c-kw">const</span> estoque = tanque - vendas<br>
+<span class="c-kw">const</span> percentual = (estoque / tanque) * <span class="c-num">100</span><br><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(estoque)     <span class="c-cm">// 2500</span><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(percentual)  <span class="c-cm">// 16.67%</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual o resultado de: 17 % 5',
+        opcoes: ['3', '2', '12', '85'],
+        correta: 1,
+        explicacao: '17 % 5 = 2. O operador % retorna o RESTO da divisão. 17 ÷ 5 = 3 com resto 2. Muito usado para verificar se um número é par/ímpar.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Por que usar === em vez de == em JavaScript?',
+        opcoes: [
+          '=== é mais rápido',
+          '=== compara valor E tipo, evitando bugs',
+          'Não faz diferença',
+          '== não funciona em JavaScript'
+        ],
+        correta: 1,
+        explicacao: '=== é o "igual estrito" — compara valor e tipo. == pode causar "5" == 5 ser true (string vs number), o que causa bugs difíceis de encontrar.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete para calcular o quadrado de 8 (8²):',
+        codigo: 'const quadrado = 8 ___ 2',
+        resposta: '**',
+        explicacao: 'O operador ** é a potência em JavaScript. 8 ** 2 = 64. É equivalente a Math.pow(8, 2).'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 5 ──────────────────────────────────────────────
+  {
+    id: 'c5',
+    titulo: 'Condicionais — tomando decisões',
+    xp: 120,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Programas precisam tomar decisões. O <code>if/else</code> faz exatamente isso:
+      <em>"SE uma condição for verdadeira, faça isso. SENÃO, faça aquilo."</em></p>
+
+      <div class="code-example">
+<span class="c-kw">if</span> (condicao) {<br>
+&nbsp;&nbsp;<span class="c-cm">// executa se condição for TRUE</span><br>
+} <span class="c-kw">else if</span> (outraCondicao) {<br>
+&nbsp;&nbsp;<span class="c-cm">// executa se a segunda condição for TRUE</span><br>
+} <span class="c-kw">else</span> {<br>
+&nbsp;&nbsp;<span class="c-cm">// executa se NENHUMA condição for verdadeira</span><br>
+}
+      </div>
+
+      <p><strong>Operadores lógicos</strong> para combinar condições:</p>
+      <div class="code-example">
+<span class="c-cm">// && — E (ambas devem ser true)</span><br>
+<span class="c-kw">if</span> (idade >= <span class="c-num">18</span> && temCNH) { ... }<br><br>
+<span class="c-cm">// || — OU (basta uma ser true)</span><br>
+<span class="c-kw">if</span> (ehAdmin || ehGerente) { ... }<br><br>
+<span class="c-cm">// ! — NÃO (inverte)</span><br>
+<span class="c-kw">if</span> (!bloqueado) { ... }
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> estoque = <span class="c-num">2500</span>  <span class="c-cm">// litros</span><br>
+<span class="c-kw">const</span> capacidade = <span class="c-num">15000</span><br>
+<span class="c-kw">const</span> percentual = (estoque / capacidade) * <span class="c-num">100</span><br><br>
+<span class="c-kw">if</span> (percentual < <span class="c-num">10</span>) {<br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"⚠️ CRÍTICO — pedir combustível!"</span>)<br>
+} <span class="c-kw">else if</span> (percentual < <span class="c-num">30</span>) {<br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"⚡ Estoque baixo"</span>)<br>
+} <span class="c-kw">else</span> {<br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"✅ Estoque OK"</span>)<br>
+}
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que o operador && faz?',
+        opcoes: [
+          'Retorna true se PELO MENOS UMA condição for verdadeira',
+          'Retorna true se AMBAS as condições forem verdadeiras',
+          'Inverte o valor booleano',
+          'Compara dois valores'
+        ],
+        correta: 1,
+        explicacao: '&& é o "E" lógico. true && true = true. true && false = false. AMBAS precisam ser verdadeiras.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Se nota = 45, qual mensagem aparece?\nif(nota>=60){console.log("Aprovado")} else {console.log("Reprovado")}',
+        opcoes: ['Aprovado', 'Reprovado', 'Nenhuma', 'Erro'],
+        correta: 1,
+        explicacao: '45 não é >= 60, então a condição é false e cai no else: "Reprovado".'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete para verificar se o usuário é admin OU gerente:',
+        codigo: 'if (ehAdmin ___ ehGerente) { liberarAcesso() }',
+        resposta: '||',
+        explicacao: '|| é o "OU" lógico. Retorna true se pelo menos uma das condições for verdadeira. Perfeito para verificar múltiplos papéis.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 6 ──────────────────────────────────────────────
+  {
+    id: 'c6',
+    titulo: 'Loops — repetindo tarefas',
+    xp: 120,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Loops executam um bloco de código várias vezes. Sem loops, você teria que escrever
+      o mesmo código 100 vezes para processar 100 itens.</p>
+
+      <p><strong>for</strong> — quando você sabe quantas vezes repetir:</p>
+      <div class="code-example">
+<span class="c-kw">for</span> (<span class="c-kw">let</span> i = <span class="c-num">0</span>; i < <span class="c-num">5</span>; i++) {<br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(i)  <span class="c-cm">// 0,1,2,3,4</span><br>
+}
+      </div>
+
+      <p><strong>while</strong> — enquanto uma condição for verdadeira:</p>
+      <div class="code-example">
+<span class="c-kw">let</span> agua = <span class="c-num">100</span><br>
+<span class="c-kw">while</span> (agua > <span class="c-num">0</span>) {<br>
+&nbsp;&nbsp;agua -= <span class="c-num">10</span>  <span class="c-cm">// bebe 10 por vez</span><br>
+}
+      </div>
+
+      <p><strong>for...of</strong> — para percorrer arrays (o mais usado no dia a dia):</p>
+      <div class="code-example">
+<span class="c-kw">const</span> postos = [<span class="c-str">"P. Ana Lúcia"</span>, <span class="c-str">"P. Glória"</span>, <span class="c-str">"P. Túnel"</span>]<br>
+<span class="c-kw">for</span> (<span class="c-kw">const</span> posto <span class="c-kw">of</span> postos) {<br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(posto)<br>
+}
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-cm">// Calcular total de vendas de 5 dias</span><br>
+<span class="c-kw">const</span> vendas = [<span class="c-num">1200</span>, <span class="c-num">980</span>, <span class="c-num">1500</span>, <span class="c-num">870</span>, <span class="c-num">1100</span>]<br>
+<span class="c-kw">let</span> total = <span class="c-num">0</span><br><br>
+<span class="c-kw">for</span> (<span class="c-kw">const</span> venda <span class="c-kw">of</span> vendas) {<br>
+&nbsp;&nbsp;total += venda<br>
+}<br><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"Total:"</span>, total)   <span class="c-cm">// 5650</span><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-str">"Média:"</span>, total / vendas.length)  <span class="c-cm">// 1130</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Quantas vezes o loop executa?\nfor (let i = 0; i < 8; i++) { ... }',
+        opcoes: ['7', '8', '9', '0'],
+        correta: 1,
+        explicacao: 'O loop começa em 0 e vai até i < 8, ou seja: 0,1,2,3,4,5,6,7 = 8 vezes. O índice vai de 0 até n-1.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual loop usar quando não sei quantas vezes repetir?',
+        opcoes: ['for', 'for...of', 'while', 'for...in'],
+        correta: 2,
+        explicacao: 'while é ideal quando a repetição depende de uma condição que pode mudar a qualquer momento. Ele continua enquanto a condição for true.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete para percorrer o array de postos:',
+        codigo: 'for (const posto ___ postos) { console.log(posto) }',
+        resposta: 'of',
+        explicacao: 'for...of percorre cada VALOR de um array. É mais legível que o for tradicional quando você não precisa do índice.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 7 ──────────────────────────────────────────────
+  {
+    id: 'c7',
+    titulo: 'Funções — reutilizando código',
+    xp: 130,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Uma <strong>função</strong> é um bloco de código com nome que você pode reusar.
+      Em vez de escrever a mesma lógica várias vezes, você cria uma função e chama ela.</p>
+
+      <div class="code-example">
+<span class="c-cm">// Declaração</span><br>
+<span class="c-kw">function</span> <span class="c-fn">somar</span>(a, b) {<br>
+&nbsp;&nbsp;<span class="c-kw">return</span> a + b<br>
+}<br><br>
+<span class="c-cm">// Chamada</span><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-fn">somar</span>(<span class="c-num">3</span>, <span class="c-num">7</span>))  <span class="c-cm">// 10</span>
+      </div>
+
+      <p><strong>Arrow function</strong> — a forma moderna e compacta:</p>
+      <div class="code-example">
+<span class="c-kw">const</span> <span class="c-fn">somar</span> = (a, b) => a + b<br>
+<span class="c-kw">const</span> <span class="c-fn">quadrado</span> = n => n ** <span class="c-num">2</span>
+      </div>
+
+      <p><strong>Parâmetros</strong> são as "entradas" da função.<br>
+      <strong>return</strong> é o que a função "devolve" como resultado.</p>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> <span class="c-fn">calcularEstoque</span> = (tanque, vendas) => {<br>
+&nbsp;&nbsp;<span class="c-kw">const</span> restante = tanque - vendas<br>
+&nbsp;&nbsp;<span class="c-kw">const</span> percentual = (restante / tanque) * <span class="c-num">100</span><br>
+&nbsp;&nbsp;<span class="c-kw">return</span> { restante, percentual }<br>
+}<br><br>
+<span class="c-kw">const</span> resultado = <span class="c-fn">calcularEstoque</span>(<span class="c-num">15000</span>, <span class="c-num">12500</span>)<br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(resultado.percentual.toFixed(<span class="c-num">1</span>) + <span class="c-str">"%"</span>)  <span class="c-cm">// 16.7%</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que é o "return" em uma função?',
+        opcoes: [
+          'Volta para o início da função',
+          'Para o programa completamente',
+          'Define o valor que a função devolve ao ser chamada',
+          'Cria uma nova variável'
+        ],
+        correta: 2,
+        explicacao: 'return define o valor que a função "devolve". Sem return, a função retorna undefined. É como o resultado de uma conta: você chama a função e ela te entrega o resultado.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual é a arrow function equivalente a: function dobrar(n) { return n * 2 }',
+        opcoes: [
+          'const dobrar = n => n * 2',
+          'const dobrar = (n) { return n * 2 }',
+          'arrow dobrar = n * 2',
+          'function dobrar => n * 2'
+        ],
+        correta: 0,
+        explicacao: 'Arrow functions com um único parâmetro e uma única expressão de retorno podem ser escritas de forma super compacta: const dobrar = n => n * 2'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete a arrow function que calcula o cubo de um número:',
+        codigo: 'const cubo = n => n ___ 3',
+        resposta: '**',
+        explicacao: '** é o operador de potência. n ** 3 = n³. Então cubo(3) retorna 27.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 8 ──────────────────────────────────────────────
+  {
+    id: 'c8',
+    titulo: 'Arrays — listas de dados',
+    xp: 130,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Arrays são listas ordenadas. Os métodos modernos de array são
+      essenciais no dia a dia de qualquer dev.</p>
+
+      <div class="code-example">
+<span class="c-kw">const</span> nums = [<span class="c-num">1</span>, <span class="c-num">2</span>, <span class="c-num">3</span>, <span class="c-num">4</span>, <span class="c-num">5</span>]<br><br>
+
+<span class="c-cm">// map — transforma cada elemento</span><br>
+nums.<span class="c-fn">map</span>(n => n * <span class="c-num">2</span>)        <span class="c-cm">// [2,4,6,8,10]</span><br><br>
+
+<span class="c-cm">// filter — filtra por condição</span><br>
+nums.<span class="c-fn">filter</span>(n => n > <span class="c-num">3</span>)    <span class="c-cm">// [4,5]</span><br><br>
+
+<span class="c-cm">// reduce — acumula em um valor</span><br>
+nums.<span class="c-fn">reduce</span>((acc, n) => acc + n, <span class="c-num">0</span>)  <span class="c-cm">// 15</span><br><br>
+
+<span class="c-cm">// find — acha o primeiro que passa no teste</span><br>
+nums.<span class="c-fn">find</span>(n => n > <span class="c-num">3</span>)      <span class="c-cm">// 4</span><br><br>
+
+<span class="c-cm">// includes — verifica se existe</span><br>
+nums.<span class="c-fn">includes</span>(<span class="c-num">3</span>)            <span class="c-cm">// true</span>
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> postos = [<br>
+&nbsp;&nbsp;{ nome: <span class="c-str">"P. Central"</span>, vendas: <span class="c-num">8500</span> },<br>
+&nbsp;&nbsp;{ nome: <span class="c-str">"P. Glória"</span>,  vendas: <span class="c-num">3200</span> },<br>
+&nbsp;&nbsp;{ nome: <span class="c-str">"P. Túnel"</span>,   vendas: <span class="c-num">12000</span> }<br>
+]<br><br>
+<span class="c-cm">// Só postos com mais de 5000L</span><br>
+<span class="c-kw">const</span> grandes = postos.<span class="c-fn">filter</span>(p => p.vendas > <span class="c-num">5000</span>)<br>
+<span class="c-cm">// Total geral</span><br>
+<span class="c-kw">const</span> total = postos.<span class="c-fn">reduce</span>((acc, p) => acc + p.vendas, <span class="c-num">0</span>)
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que [1,2,3,4].filter(n => n % 2 === 0) retorna?',
+        opcoes: ['[1,3]', '[2,4]', '[1,2,3,4]', '[0]'],
+        correta: 1,
+        explicacao: 'filter retorna um novo array com os elementos que passam no teste. n % 2 === 0 testa se é par. Dos 4 números, 2 e 4 são pares.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual método transforma cada elemento de um array?',
+        opcoes: ['filter', 'find', 'map', 'reduce'],
+        correta: 2,
+        explicacao: 'map cria um novo array aplicando uma função a cada elemento. É como uma linha de montagem: cada item entra e sai transformado.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete para somar todos os números: [10, 20, 30]',
+        codigo: 'const soma = [10,20,30].reduce((acc, n) => acc ___ n, 0)',
+        resposta: '+',
+        explicacao: 'reduce acumula os valores. Começa com acc=0, adiciona cada n: 0+10=10, 10+20=30, 30+30=60. Resultado: 60.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 9 ──────────────────────────────────────────────
+  {
+    id: 'c9',
+    titulo: 'Objetos — estruturando dados',
+    xp: 130,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Objetos agrupam dados relacionados em propriedades chave-valor.
+      São a base de quase tudo em JavaScript.</p>
+
+      <div class="code-example">
+<span class="c-kw">const</span> posto = {<br>
+&nbsp;&nbsp;nome: <span class="c-str">"P. Central"</span>,<br>
+&nbsp;&nbsp;tanques: <span class="c-num">4</span>,<br>
+&nbsp;&nbsp;ativo: <span class="c-kw">true</span>,<br>
+&nbsp;&nbsp;<span class="c-cm">// Método — função dentro de objeto</span><br>
+&nbsp;&nbsp;<span class="c-fn">descrever</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span> <span class="c-str">\`\${this.nome} tem \${this.tanques} tanques\`</span><br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+<span class="c-cm">// Desestruturação — extrair propriedades</span><br>
+<span class="c-kw">const</span> { nome, tanques } = posto<br><br>
+<span class="c-cm">// Spread — copiar/mesclar objetos</span><br>
+<span class="c-kw">const</span> atualizado = { ...posto, tanques: <span class="c-num">6</span> }
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> usuario = { nome: <span class="c-str">"Maycon"</span>, xp: <span class="c-num">340</span>, nivel: <span class="c-num">3</span> }<br><br>
+<span class="c-cm">// Desestrutura direto nos parâmetros</span><br>
+<span class="c-kw">const</span> <span class="c-fn">saudar</span> = ({ nome, nivel }) =><br>
+&nbsp;&nbsp;<span class="c-str">\`Olá \${nome}! Você está no nível \${nivel}\`</span><br><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-fn">saudar</span>(usuario))<br>
+<span class="c-cm">// "Olá Maycon! Você está no nível 3"</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que é desestruturação de objeto?',
+        opcoes: [
+          'Deletar um objeto',
+          'Extrair propriedades de um objeto para variáveis individuais',
+          'Copiar um objeto',
+          'Converter objeto em array'
+        ],
+        correta: 1,
+        explicacao: 'const { nome, idade } = pessoa é equivalente a: const nome = pessoa.nome; const idade = pessoa.idade. É mais limpo e conciso.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'O que o spread operator (...) faz com objetos?',
+        opcoes: [
+          'Apaga todas as propriedades',
+          'Cria uma cópia com as propriedades espalhadas',
+          'Converte em array',
+          'Ordena as propriedades'
+        ],
+        correta: 1,
+        explicacao: '{ ...obj, novaProp: valor } cria um NOVO objeto com todas as propriedades de obj, mais a nova propriedade. O original não é modificado.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete a template string para exibir o nome:\nconst user = { nome: "Maycon" }',
+        codigo: 'console.log(`Olá ${___nome}`)',
+        resposta: 'user.',
+        explicacao: 'Template strings usam ${} para inserir expressões. ${user.nome} acessa a propriedade nome do objeto user.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 10 ──────────────────────────────────────────────
+  {
+    id: 'c10',
+    titulo: 'Escopo e closures',
+    xp: 150,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p><strong>Escopo</strong> define onde uma variável pode ser acessada.</p>
+
+      <div class="code-example">
+<span class="c-kw">const</span> global = <span class="c-str">"vejo tudo"</span>  <span class="c-cm">// escopo global</span><br><br>
+<span class="c-kw">function</span> <span class="c-fn">exemplo</span>() {<br>
+&nbsp;&nbsp;<span class="c-kw">const</span> local = <span class="c-str">"só aqui dentro"</span>  <span class="c-cm">// escopo local</span><br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(global)  <span class="c-cm">// ✅ funciona</span><br>
+&nbsp;&nbsp;<span class="c-fn">console</span>.<span class="c-fn">log</span>(local)   <span class="c-cm">// ✅ funciona</span><br>
+}<br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(local)  <span class="c-cm">// ❌ ReferenceError!</span>
+      </div>
+
+      <p><strong>Closure</strong> — uma função que "lembra" o escopo onde foi criada, mesmo depois que esse escopo fechou:</p>
+
+      <div class="code-example">
+<span class="c-kw">function</span> <span class="c-fn">contador</span>() {<br>
+&nbsp;&nbsp;<span class="c-kw">let</span> count = <span class="c-num">0</span><br>
+&nbsp;&nbsp;<span class="c-kw">return</span> () => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;count++<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">return</span> count<br>
+&nbsp;&nbsp;}<br>
+}<br>
+<span class="c-kw">const</span> contar = <span class="c-fn">contador</span>()<br>
+<span class="c-fn">contar</span>()  <span class="c-cm">// 1</span><br>
+<span class="c-fn">contar</span>()  <span class="c-cm">// 2</span><br>
+<span class="c-fn">contar</span>()  <span class="c-cm">// 3</span>
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-cm">// Closure para XP do usuário</span><br>
+<span class="c-kw">function</span> <span class="c-fn">criarUsuario</span>(nomeInicial) {<br>
+&nbsp;&nbsp;<span class="c-kw">let</span> xp = <span class="c-num">0</span><br>
+&nbsp;&nbsp;<span class="c-kw">return</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">ganharXP</span>: (pts) => { xp += pts },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-fn">getXP</span>: () => xp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nome: nomeInicial<br>
+&nbsp;&nbsp;}<br>
+}<br>
+<span class="c-kw">const</span> maycon = <span class="c-fn">criarUsuario</span>(<span class="c-str">"Maycon"</span>)<br>
+maycon.<span class="c-fn">ganharXP</span>(<span class="c-num">100</span>)<br>
+maycon.<span class="c-fn">ganharXP</span>(<span class="c-num">150</span>)<br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(maycon.<span class="c-fn">getXP</span>())  <span class="c-cm">// 250</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Uma variável declarada dentro de uma função pode ser acessada fora dela?',
+        opcoes: [
+          'Sim, sempre',
+          'Não, ela existe apenas dentro da função',
+          'Só se usar var',
+          'Só se usar const'
+        ],
+        correta: 1,
+        explicacao: 'Variáveis com let e const têm escopo de bloco. Declaradas dentro de uma função, existem apenas dentro dela. Tentar acessar de fora resulta em ReferenceError.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'O que é uma closure?',
+        opcoes: [
+          'Um erro de escopo',
+          'Uma função que lembra o escopo onde foi criada',
+          'Um loop infinito',
+          'Uma forma de fechar o programa'
+        ],
+        correta: 1,
+        explicacao: 'Closure é quando uma função interna "captura" variáveis do escopo externo e as mantém vivas mesmo depois que a função externa retornou. É um conceito fundamental de JS.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'O que aparece no console? let x = 10; function f() { let x = 20; return x } console.log(___)',
+        codigo: 'console.log(f()) // ?',
+        resposta: '20',
+        explicacao: 'A função f() tem seu próprio x = 20 (escopo local). O x = 10 do escopo externo não interfere. f() retorna 20.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 11 ──────────────────────────────────────────────
+  {
+    id: 'c11',
+    titulo: 'Algoritmos de busca',
+    xp: 150,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Busca é uma das operações mais comuns em programação. Existem duas abordagens clássicas:</p>
+
+      <p><strong>Busca Linear O(n)</strong> — verifica um por um:</p>
+      <div class="code-example">
+<span class="c-kw">function</span> <span class="c-fn">buscaLinear</span>(arr, alvo) {<br>
+&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> i = <span class="c-num">0</span>; i < arr.length; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">if</span> (arr[i] === alvo) <span class="c-kw">return</span> i<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="c-kw">return</span> -<span class="c-num">1</span>  <span class="c-cm">// não encontrado</span><br>
+}
+      </div>
+
+      <p><strong>Busca Binária O(log n)</strong> — divide o array ao meio a cada passo. O array <em>precisa estar ordenado</em>:</p>
+      <div class="code-example">
+<span class="c-kw">function</span> <span class="c-fn">buscaBinaria</span>(arr, alvo) {<br>
+&nbsp;&nbsp;<span class="c-kw">let</span> inicio = <span class="c-num">0</span>, fim = arr.length - <span class="c-num">1</span><br>
+&nbsp;&nbsp;<span class="c-kw">while</span> (inicio <= fim) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">const</span> meio = Math.<span class="c-fn">floor</span>((inicio + fim) / <span class="c-num">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">if</span> (arr[meio] === alvo) <span class="c-kw">return</span> meio<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">else if</span> (arr[meio] < alvo) inicio = meio + <span class="c-num">1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">else</span> fim = meio - <span class="c-num">1</span><br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="c-kw">return</span> -<span class="c-num">1</span><br>
+}
+      </div>
+
+      <p>Com 1 milhão de itens: busca linear = até 1.000.000 passos. Busca binária = apenas <strong>20 passos</strong>!</p>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> ids = [<span class="c-num">10</span>, <span class="c-num">23</span>, <span class="c-num">45</span>, <span class="c-num">67</span>, <span class="c-num">89</span>, <span class="c-num">102</span>]<br><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-fn">buscaBinaria</span>(ids, <span class="c-num">67</span>))  <span class="c-cm">// 3 (índice)</span><br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-fn">buscaBinaria</span>(ids, <span class="c-num">50</span>))  <span class="c-cm">// -1 (não existe)</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual a pré-condição para usar busca binária?',
+        opcoes: [
+          'O array precisa ter tamanho par',
+          'O array precisa estar ordenado',
+          'O array não pode ter duplicatas',
+          'Nenhuma pré-condição'
+        ],
+        correta: 1,
+        explicacao: 'Busca binária só funciona em arrays ordenados! Ela compara o elemento do meio e descarta metade dos dados a cada passo — isso só é possível se os dados tiverem ordem.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Quantos passos no máximo a busca binária precisa para encontrar algo em 1.024 elementos?',
+        opcoes: ['1024', '512', '10', '100'],
+        correta: 2,
+        explicacao: 'log₂(1024) = 10. A busca binária divide pela metade a cada passo. 1024→512→256→128→64→32→16→8→4→2→1 = 10 passos máximos!'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete: busca linear tem complexidade O(n), busca binária tem O(___)',
+        codigo: '// Complexidade busca binária: O(___)',
+        resposta: 'log n',
+        explicacao: 'O(log n) significa que o tempo cresce logaritmicamente. Dobrar o tamanho do array adiciona apenas 1 passo extra na busca binária.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 12 ──────────────────────────────────────────────
+  {
+    id: 'c12',
+    titulo: 'Ordenação — Bubble e Selection Sort',
+    xp: 150,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Ordenar dados é fundamental. Vamos aprender os dois algoritmos mais didáticos — não os mais rápidos, mas os mais fáceis de entender.</p>
+
+      <p><strong>Bubble Sort O(n²)</strong> — compara pares adjacentes e "borbulha" o maior para o fim:</p>
+      <div class="code-example">
+<span class="c-kw">function</span> <span class="c-fn">bubbleSort</span>(arr) {<br>
+&nbsp;&nbsp;<span class="c-kw">const</span> a = [...arr]  <span class="c-cm">// cópia</span><br>
+&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> i = <span class="c-num">0</span>; i < a.length; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> j = <span class="c-num">0</span>; j < a.length - i - <span class="c-num">1</span>; j++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">if</span> (a[j] > a[j+<span class="c-num">1</span>]) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a[j], a[j+<span class="c-num">1</span>]] = [a[j+<span class="c-num">1</span>], a[j]]  <span class="c-cm">// swap</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="c-kw">return</span> a<br>
+}
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-kw">const</span> vendas = [<span class="c-num">980</span>, <span class="c-num">1500</span>, <span class="c-num">450</span>, <span class="c-num">2100</span>, <span class="c-num">730</span>]<br>
+<span class="c-fn">console</span>.<span class="c-fn">log</span>(<span class="c-fn">bubbleSort</span>(vendas))<br>
+<span class="c-cm">// [450, 730, 980, 1500, 2100]</span><br><br>
+<span class="c-cm">// JavaScript nativo (muito mais rápido!):</span><br>
+vendas.<span class="c-fn">sort</span>((a, b) => a - b)
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual a complexidade do Bubble Sort no pior caso?',
+        opcoes: ['O(n)', 'O(log n)', 'O(n²)', 'O(1)'],
+        correta: 2,
+        explicacao: 'Bubble Sort tem dois loops aninhados, cada um percorrendo até n elementos. Resultado: O(n²). Para 1000 itens = até 1.000.000 operações. Por isso não é usado em produção com dados grandes.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'O que [a[j], a[j+1]] = [a[j+1], a[j]] faz?',
+        opcoes: [
+          'Compara dois elementos',
+          'Troca os valores dos dois elementos (swap)',
+          'Remove um elemento',
+          'Duplica o elemento'
+        ],
+        correta: 1,
+        explicacao: 'É a desestruturação para fazer swap (troca) em uma linha. Sem isso você precisaria de uma variável temporária: let tmp = a[j]; a[j] = a[j+1]; a[j+1] = tmp.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Para ordenar array em JS nativo de forma crescente:',
+        codigo: '[5,2,8,1].sort((a, b) => a ___ b)',
+        resposta: '-',
+        explicacao: 'sort((a, b) => a - b) ordena crescente. Se retorna negativo, a vem antes. sort((a, b) => b - a) ordena decrescente.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 13 ──────────────────────────────────────────────
+  {
+    id: 'c13',
+    titulo: 'Big O Notation — eficiência de algoritmos',
+    xp: 160,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Big O descreve como o tempo de execução cresce conforme o tamanho da entrada aumenta.
+      É a linguagem universal para comparar algoritmos.</p>
+
+      <div class="code-example">
+O(<span class="c-num">1</span>)      — Constante   — acesso a índice de array<br>
+O(log n) — Logarítmico — busca binária<br>
+O(n)     — Linear      — busca linear, for loop<br>
+O(n²)    — Quadrático  — loops aninhados, bubble sort<br>
+O(<span class="c-num">2</span>ⁿ)    — Exponencial — algoritmos recursivos ingênuos
+      </div>
+
+      <p>Do mais rápido ao mais lento: O(1) < O(log n) < O(n) < O(n²) < O(2ⁿ)</p>
+
+      <div class="code-example">
+<span class="c-cm">// O(1) — sempre 1 passo</span><br>
+<span class="c-kw">const</span> primeiro = arr[<span class="c-num">0</span>]<br><br>
+
+<span class="c-cm">// O(n) — cresce com o tamanho</span><br>
+<span class="c-kw">for</span> (<span class="c-kw">const</span> item <span class="c-kw">of</span> arr) { ... }<br><br>
+
+<span class="c-cm">// O(n²) — loops aninhados</span><br>
+<span class="c-kw">for</span> (<span class="c-kw">let</span> i = <span class="c-num">0</span>; i < n; i++)<br>
+&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> j = <span class="c-num">0</span>; j < n; j++) { ... }
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-cm">// ❌ Ruim — O(n²) — evite em produção</span><br>
+<span class="c-kw">function</span> <span class="c-fn">temDuplicataLento</span>(arr) {<br>
+&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> i = <span class="c-num">0</span>; i < arr.length; i++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">for</span> (<span class="c-kw">let</span> j = i+<span class="c-num">1</span>; j < arr.length; j++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-kw">if</span> (arr[i] === arr[j]) <span class="c-kw">return</span> <span class="c-kw">true</span><br>
+}<br><br>
+<span class="c-cm">// ✅ Bom — O(n) — muito mais rápido!</span><br>
+<span class="c-kw">function</span> <span class="c-fn">temDuplicataRapido</span>(arr) {<br>
+&nbsp;&nbsp;<span class="c-kw">return</span> <span class="c-kw">new</span> Set(arr).size !== arr.length<br>
+}
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual a complexidade de acessar arr[0] diretamente?',
+        opcoes: ['O(n)', 'O(log n)', 'O(n²)', 'O(1)'],
+        correta: 3,
+        explicacao: 'Acessar um elemento por índice é sempre O(1) — constante. Não importa se o array tem 10 ou 1 bilhão de elementos, o acesso é instantâneo.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Ordene do mais eficiente ao menos eficiente:',
+        opcoes: [
+          'O(n²) < O(n) < O(log n) < O(1)',
+          'O(1) < O(log n) < O(n) < O(n²)',
+          'O(n) < O(1) < O(n²) < O(log n)',
+          'Todos são iguais'
+        ],
+        correta: 1,
+        explicacao: 'O(1) é o melhor (constante), depois O(log n), depois O(n) (linear), e O(n²) é o pior entre os comuns. Sempre busque a menor complexidade possível.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Um algoritmo com dois loops aninhados sobre n elementos tem complexidade:',
+        codigo: '// Dois loops aninhados = O(___)',
+        resposta: 'n²',
+        explicacao: 'Cada loop interno executa n vezes para cada iteração do loop externo: n × n = n². Sempre que ver loops aninhados, suspeite de O(n²).'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 14 ──────────────────────────────────────────────
+  {
+    id: 'c14',
+    titulo: 'Recursão — funções que chamam a si mesmas',
+    xp: 160,
+    teoria: `
+      <h3>🦉 Athena diz:</h3>
+      <p>Recursão é quando uma função chama a si mesma. Parece magia, mas tem lógica clara.
+      Todo algoritmo recursivo precisa de dois elementos:</p>
+
+      <ul>
+        <li><strong>Caso base</strong> — a condição de parada (sem isso = loop infinito!)</li>
+        <li><strong>Caso recursivo</strong> — a função chamando a si mesma com um problema menor</li>
+      </ul>
+
+      <div class="code-example">
+<span class="c-cm">// Fatorial: 5! = 5 × 4 × 3 × 2 × 1 = 120</span><br>
+<span class="c-kw">function</span> <span class="c-fn">fatorial</span>(n) {<br>
+&nbsp;&nbsp;<span class="c-kw">if</span> (n <= <span class="c-num">1</span>) <span class="c-kw">return</span> <span class="c-num">1</span>  <span class="c-cm">// caso base!</span><br>
+&nbsp;&nbsp;<span class="c-kw">return</span> n * <span class="c-fn">fatorial</span>(n - <span class="c-num">1</span>)   <span class="c-cm">// caso recursivo</span><br>
+}<br><br>
+<span class="c-fn">fatorial</span>(<span class="c-num">5</span>)  <span class="c-cm">// 5 × 4 × 3 × 2 × 1 = 120</span>
+      </div>
+    `,
+    exemplo: `
+      <div class="code-example">
+<span class="c-cm">// Fibonacci: 0,1,1,2,3,5,8,13,21...</span><br>
+<span class="c-kw">function</span> <span class="c-fn">fib</span>(n) {<br>
+&nbsp;&nbsp;<span class="c-kw">if</span> (n <= <span class="c-num">1</span>) <span class="c-kw">return</span> n  <span class="c-cm">// caso base</span><br>
+&nbsp;&nbsp;<span class="c-kw">return</span> <span class="c-fn">fib</span>(n-<span class="c-num">1</span>) + <span class="c-fn">fib</span>(n-<span class="c-num">2</span>)<br>
+}<br><br>
+<span class="c-fn">fib</span>(<span class="c-num">7</span>)  <span class="c-cm">// 13</span><br><br>
+<span class="c-cm">// ⚠️ Ingênuo acima = O(2ⁿ)</span><br>
+<span class="c-cm">// Com memoização = O(n) — muito melhor!</span>
+      </div>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: 'O que acontece sem o caso base em uma função recursiva?',
+        opcoes: [
+          'A função retorna undefined',
+          'A função executa uma vez e para',
+          'Ocorre um Stack Overflow (loop infinito)',
+          'O JavaScript para automaticamente'
+        ],
+        correta: 2,
+        explicacao: 'Sem caso base, a função chama a si mesma infinitamente até estourar a pilha de chamadas: "Maximum call stack size exceeded" — Stack Overflow!'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: 'Qual o resultado de fatorial(4)?',
+        opcoes: ['24', '16', '10', '4'],
+        correta: 0,
+        explicacao: '4! = 4 × 3 × 2 × 1 = 24. A recursão vai: fatorial(4) = 4 × fatorial(3) = 4 × 3 × fatorial(2) = 4 × 3 × 2 × fatorial(1) = 4×3×2×1 = 24.'
+      },
+      {
+        tipo: 'completar',
+        pergunta: 'Complete o caso base da função de fatorial:',
+        codigo: 'function fatorial(n) {\n  if (n <= ___) return 1\n  return n * fatorial(n-1)\n}',
+        resposta: '1',
+        explicacao: 'O caso base é n <= 1, retornando 1. Isso garante que a recursão pare quando chegar em 1 (ou 0), pois 0! = 1! = 1 por definição matemática.'
+      }
+    ]
+  },
+
+  // ── LIÇÃO 15 ──────────────────────────────────────────────
+  {
+    id: 'c15',
+    titulo: 'Mini-Prova — Lógica & Fundamentos',
+    xp: 300,
+    tipo: 'prova',
+    teoria: `
+      <h3>🦉 Parabéns! Chegou a hora da Mini-Prova!</h3>
+      <p>Você completou as 14 lições de fundamentos. Esta mini-prova avalia tudo que você aprendeu.
+      Mínimo de <strong>70%</strong> para passar. Boa sorte!</p>
+    `,
+    exercicios: [
+      {
+        tipo: 'multipla',
+        pergunta: '[PROVA] Qual a diferença entre let e const?',
+        opcoes: ['Nenhuma', 'let pode ser reatribuído, const não', 'const é mais rápido', 'let é para strings'],
+        correta: 1,
+        explicacao: 'let permite reatribuição de valor. const não permite — após a declaração, a referência é imutável.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: '[PROVA] O que [1,2,3].map(n => n * 2) retorna?',
+        opcoes: ['[1,2,3]', '12', '[2,4,6]', 'undefined'],
+        correta: 2,
+        explicacao: 'map transforma cada elemento. 1×2=2, 2×2=4, 3×2=6. Resultado: [2,4,6].'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: '[PROVA] Qual a complexidade da busca binária?',
+        opcoes: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'],
+        correta: 2,
+        explicacao: 'Busca binária divide o problema pela metade a cada passo: O(log n).'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: '[PROVA] O que é uma closure?',
+        opcoes: [
+          'Um erro de escopo',
+          'Uma função que lembra variáveis do escopo onde foi criada',
+          'Um loop que fecha',
+          'Um tipo de array'
+        ],
+        correta: 1,
+        explicacao: 'Closure é quando uma função interna captura e mantém referência a variáveis do escopo externo.'
+      },
+      {
+        tipo: 'multipla',
+        pergunta: '[PROVA] Sem caso base, o que acontece em recursão?',
+        opcoes: ['Retorna 0', 'Stack Overflow', 'Retorna undefined', 'Nada'],
+        correta: 1,
+        explicacao: 'Sem caso base a função se chama infinitamente até estourar a pilha: Stack Overflow.'
+      }
+    ]
+  }
+]
+
+</script>
+<script>
+// ============================================================
+// CodeWisdom — app.js v2
+// Dinâmica igual Duolingo: feedback no bottom, botão de ação
+// ============================================================
+
 const ESTADO_INICIAL = {
-  xp: 0,
-  streak: 0,
-  ultimoAcesso: null,
+  xp: 0, streak: 0, ultimoAcesso: null,
   animalAtual: 'coruja',
   animaisDesbloqueados: ['coruja'],
   progresso: {
-    coruja: { licoesFeitas: [], erros: {} },
-    elefante: { licoesFeitas: [], erros: {} },
+    coruja:    { licoesFeitas: [], erros: {} },
+    elefante:  { licoesFeitas: [], erros: {} },
     tartaruga: { licoesFeitas: [], erros: {} },
-    lobo: { licoesFeitas: [], erros: {} },
-    corvo: { licoesFeitas: [], erros: {} },
-    leao: { licoesFeitas: [], erros: {} }
+    lobo:      { licoesFeitas: [], erros: {} },
+    corvo:     { licoesFeitas: [], erros: {} },
+    leao:      { licoesFeitas: [], erros: {} }
   }
 }
 
 let estado = carregarEstado()
 let licaoAtual = null
-let etapaAtual = 0 // 0=teoria, 1=exemplo, 2..=exercicios
-let exercicioAtual = 0
+let etapaAtual = 0
+let exIdx = 0
 let respostasErradas = []
-let respondido = false
+let opcaoSelecionada = null
+let jaRespondeu = false
+let inputCerto = false
 
 // ── DADOS DOS ANIMAIS ─────────────────────────────────────────
 const ANIMAIS = {
   coruja: {
-    emoji: '🦉', nome: 'Athena, a Coruja',
-    quote: '"A lógica é a raiz de tudo"',
-    fase: 'Fase 1 · Lógica & Fundamentos',
-    bg: 'linear-gradient(135deg,#2d2066,#4c1d95)',
-    heroBg: '#0f3460',
-    cor: '#a78bfa',
-    licoes: typeof CORUJA_LICOES !== 'undefined' ? CORUJA_LICOES : [],
+    emoji:'🦉', nome:'Athena, a Coruja',
+    quote:'"A lógica é a raiz de tudo"',
+    fase:'Fase 1 · Lógica & Fundamentos',
+    bg:'linear-gradient(135deg,#2d2066,#4c1d95)',
+    heroBg:'#0f3460', cor:'#a78bfa',
+    get licoes() { return typeof CORUJA_LICOES !== 'undefined' ? CORUJA_LICOES : [] },
     trilhas: [
-      { icon: '🧩', bg: 'rgba(124,111,247,0.2)', nome: 'Lógica de programação', desc: 'Variáveis, condições e loops', licoes: [0,1,2,3,4,5] },
-      { icon: '⚙️', bg: 'rgba(16,185,129,0.2)', nome: 'Funções e estruturas', desc: 'Funções, arrays, objetos, escopo', licoes: [6,7,8,9] },
-      { icon: '🔍', bg: 'rgba(245,158,11,0.2)', nome: 'Algoritmos', desc: 'Busca, ordenação, Big O, recursão', licoes: [10,11,12,13] },
-      { icon: '📝', bg: 'rgba(239,68,68,0.2)', nome: 'Mini-Prova', desc: 'Avaliação da Fase 1', licoes: [14] }
+      { icon:'🧩', bg:'rgba(124,111,247,0.2)', nome:'Lógica de programação', desc:'Variáveis, condições e loops', licoes:[0,1,2,3,4,5] },
+      { icon:'⚙️', bg:'rgba(16,185,129,0.2)',  nome:'Funções e estruturas',  desc:'Funções, arrays, objetos, escopo', licoes:[6,7,8,9] },
+      { icon:'🔍', bg:'rgba(245,158,11,0.2)',  nome:'Algoritmos',            desc:'Busca, ordenação, Big O, recursão', licoes:[10,11,12,13] },
+      { icon:'📝', bg:'rgba(239,68,68,0.2)',   nome:'Mini-Prova',            desc:'Avaliação da Fase 1', licoes:[14] }
     ]
   },
   elefante: {
-    emoji: '🐘', nome: 'Memo, o Elefante',
-    quote: '"Um bom dev nunca esquece"',
-    fase: 'Fase 2 · Backend & Dados',
-    bg: 'linear-gradient(135deg,#1a3a4a,#1e40af)',
-    heroBg: '#0d2a38',
-    cor: '#93c5fd',
-    licoes: [],
+    emoji:'🐘', nome:'Memo, o Elefante',
+    quote:'"Um bom dev nunca esquece"',
+    fase:'Fase 2 · Backend & Dados',
+    bg:'linear-gradient(135deg,#1a3a4a,#1e40af)', heroBg:'#0d2a38', cor:'#93c5fd',
+    get licoes() { return typeof ELEFANTE_LICOES !== 'undefined' ? ELEFANTE_LICOES : [] },
     trilhas: [
-      { icon: '🗄️', bg: 'rgba(59,130,246,0.2)', nome: 'SQL Completo', desc: 'SELECT, JOIN, INDEX, transações', licoes: [] },
-      { icon: '📦', bg: 'rgba(16,185,129,0.2)', nome: 'APIs REST', desc: 'Node.js, Express, autenticação', licoes: [] },
-      { icon: '🔐', bg: 'rgba(124,111,247,0.2)', nome: 'Segurança Backend', desc: 'JWT, OAuth, boas práticas', licoes: [] }
+      { icon:'🗄️', bg:'rgba(59,130,246,0.2)',  nome:'SQL Completo',      desc:'SELECT, JOIN, INDEX, transações', licoes:[] },
+      { icon:'📦', bg:'rgba(16,185,129,0.2)',   nome:'APIs REST',         desc:'Node.js, Express, autenticação', licoes:[] },
+      { icon:'🔐', bg:'rgba(124,111,247,0.2)',  nome:'Segurança Backend', desc:'JWT, OAuth, boas práticas', licoes:[] }
     ]
   },
   tartaruga: {
-    emoji: '🐢', nome: 'Zen, a Tartaruga',
-    quote: '"Consistência vence velocidade"',
-    fase: 'Fase 3 · Frontend & Design',
-    bg: 'linear-gradient(135deg,#1a3a2a,#065f46)',
-    heroBg: '#0d2a1a',
-    cor: '#6ee7b7',
-    licoes: [],
+    emoji:'🐢', nome:'Zen, a Tartaruga',
+    quote:'"Consistência vence velocidade"',
+    fase:'Fase 3 · Frontend & Design',
+    bg:'linear-gradient(135deg,#1a3a2a,#065f46)', heroBg:'#0d2a1a', cor:'#6ee7b7',
+    get licoes() { return typeof TARTARUGA_LICOES !== 'undefined' ? TARTARUGA_LICOES : [] },
     trilhas: [
-      { icon: '🎨', bg: 'rgba(16,185,129,0.2)', nome: 'HTML & CSS', desc: 'Layouts, Flexbox, Grid, animações', licoes: [] },
-      { icon: '⚡', bg: 'rgba(245,158,11,0.2)', nome: 'JavaScript', desc: 'DOM, eventos, fetch API', licoes: [] },
-      { icon: '⚛️', bg: 'rgba(124,111,247,0.2)', nome: 'React', desc: 'Componentes, hooks, estado', licoes: [] }
+      { icon:'🎨', bg:'rgba(16,185,129,0.2)',  nome:'HTML & CSS',    desc:'Layouts, Flexbox, Grid, animações', licoes:[] },
+      { icon:'⚡', bg:'rgba(245,158,11,0.2)',  nome:'JavaScript',    desc:'DOM, eventos, fetch API', licoes:[] },
+      { icon:'⚛️', bg:'rgba(124,111,247,0.2)', nome:'React',         desc:'Componentes, hooks, estado', licoes:[] }
     ]
   },
   lobo: {
-    emoji: '🐺', nome: 'Aro, o Lobo',
-    quote: '"Código em equipe é mais forte"',
-    fase: 'Fase 4 · Engenharia de Software',
-    bg: 'linear-gradient(135deg,#2a1a1a,#7f1d1d)',
-    heroBg: '#1a0d0d',
-    cor: '#fca5a5',
-    licoes: [],
+    emoji:'🐺', nome:'Aro, o Lobo',
+    quote:'"Código em equipe é mais forte"',
+    fase:'Fase 4 · Engenharia de Software',
+    bg:'linear-gradient(135deg,#2a1a1a,#7f1d1d)', heroBg:'#1a0d0d', cor:'#fca5a5',
+    get licoes() { return typeof LOBO_LICOES !== 'undefined' ? LOBO_LICOES : [] },
     trilhas: [
-      { icon: '🏗️', bg: 'rgba(245,158,11,0.2)', nome: 'SOLID & Padrões', desc: 'Clean code, Design Patterns', licoes: [] },
-      { icon: '🔀', bg: 'rgba(59,130,246,0.2)', nome: 'Git & CI/CD', desc: 'Git avançado, pipelines', licoes: [] },
-      { icon: '🐳', bg: 'rgba(124,111,247,0.2)', nome: 'Docker & Cloud', desc: 'Containers, AWS, GCP', licoes: [] }
+      { icon:'🏗️', bg:'rgba(245,158,11,0.2)',  nome:'SOLID & Padrões', desc:'Clean code, Design Patterns', licoes:[] },
+      { icon:'🔀', bg:'rgba(59,130,246,0.2)',   nome:'Git & CI/CD',    desc:'Git avançado, pipelines', licoes:[] },
+      { icon:'🐳', bg:'rgba(124,111,247,0.2)',  nome:'Docker & Cloud', desc:'Containers, AWS, GCP', licoes:[] }
     ]
   },
   corvo: {
-    emoji: '🐦‍⬛', nome: 'Nyx, o Corvo',
-    quote: '"Hackeie o impossível"',
-    fase: 'Fase 5 · IA, Segurança & Dados',
-    bg: 'linear-gradient(135deg,#0d0d1a,#1e1b4b)',
-    heroBg: '#06060f',
-    cor: '#c4b5fd',
-    licoes: [],
+    emoji:'🐦‍⬛', nome:'Nyx, o Corvo',
+    quote:'"Hackeie o impossível"',
+    fase:'Fase 5 · IA, Segurança & Dados',
+    bg:'linear-gradient(135deg,#0d0d1a,#1e1b4b)', heroBg:'#06060f', cor:'#c4b5fd',
+    get licoes() { return typeof CORVO_LICOES !== 'undefined' ? CORVO_LICOES : [] },
     trilhas: [
-      { icon: '🤖', bg: 'rgba(124,111,247,0.2)', nome: 'IA & Machine Learning', desc: 'Python, modelos, LLMs', licoes: [] },
-      { icon: '🔒', bg: 'rgba(239,68,68,0.2)', nome: 'Kali Linux & Pentest', desc: 'OWASP, Metasploit, Burp', licoes: [] },
-      { icon: '📊', bg: 'rgba(16,185,129,0.2)', nome: 'Data Science', desc: 'Pandas, visualizações, insights', licoes: [] }
+      { icon:'🤖', bg:'rgba(124,111,247,0.2)', nome:'IA & Machine Learning', desc:'Python, modelos, LLMs', licoes:[] },
+      { icon:'🔒', bg:'rgba(239,68,68,0.2)',   nome:'Kali Linux & Pentest',  desc:'OWASP, Metasploit, Burp', licoes:[] },
+      { icon:'📊', bg:'rgba(16,185,129,0.2)',  nome:'Data Science',          desc:'Pandas, visualizações', licoes:[] }
     ]
   },
   leao: {
-    emoji: '🦁', nome: 'Rex, o Leão',
-    quote: '"O mestre hackeia o mundo físico"',
-    fase: 'Era Bônus · Hardware Hacking',
-    bg: 'linear-gradient(135deg,#2a1800,#78350f)',
-    heroBg: '#1a0e00',
-    cor: '#fcd34d',
-    licoes: [],
+    emoji:'🦁', nome:'Rex, o Leão',
+    quote:'"O mestre hackeia o mundo físico"',
+    fase:'Era Bônus · Hardware Hacking',
+    bg:'linear-gradient(135deg,#2a1800,#78350f)', heroBg:'#1a0e00', cor:'#fcd34d',
+    get licoes() { return typeof LEAO_LICOES !== 'undefined' ? LEAO_LICOES : [] },
     trilhas: [
-      { icon: '📡', bg: 'rgba(245,158,11,0.2)', nome: 'ESP32 & Arduino', desc: 'C/C++, firmware, IoT', licoes: [] },
-      { icon: '🦈', bg: 'rgba(59,130,246,0.2)', nome: 'M5Shark & Flipper', desc: 'Ferramentas de hacking WiFi', licoes: [] },
-      { icon: '📻', bg: 'rgba(236,72,153,0.2)', nome: 'HackRF & SDR', desc: 'Rádio frequência, replay attacks', licoes: [] }
+      { icon:'📡', bg:'rgba(245,158,11,0.2)',  nome:'ESP32 & Arduino', desc:'C/C++, firmware, IoT', licoes:[] },
+      { icon:'🦈', bg:'rgba(59,130,246,0.2)',  nome:'M5Shark & Flipper', desc:'Ferramentas WiFi hacking', licoes:[] },
+      { icon:'📻', bg:'rgba(236,72,153,0.2)', nome:'HackRF & SDR',    desc:'Rádio frequência, SDR', licoes:[] }
     ]
   }
 }
@@ -617,11 +1943,11 @@ const ANIMAIS = {
 // ── PERSISTÊNCIA ──────────────────────────────────────────────
 function carregarEstado() {
   try {
-    const salvo = localStorage.getItem('cw_estado')
-    return salvo ? { ...ESTADO_INICIAL, ...JSON.parse(salvo) } : { ...ESTADO_INICIAL }
-  } catch { return { ...ESTADO_INICIAL } }
+    const s = localStorage.getItem('cw_estado')
+    if (!s) return JSON.parse(JSON.stringify(ESTADO_INICIAL))
+    return Object.assign(JSON.parse(JSON.stringify(ESTADO_INICIAL)), JSON.parse(s))
+  } catch { return JSON.parse(JSON.stringify(ESTADO_INICIAL)) }
 }
-
 function salvarEstado() {
   localStorage.setItem('cw_estado', JSON.stringify(estado))
 }
@@ -631,81 +1957,102 @@ function verificarStreak() {
   const hoje = new Date().toDateString()
   const ontem = new Date(Date.now() - 86400000).toDateString()
   if (estado.ultimoAcesso === hoje) return
-  if (estado.ultimoAcesso === ontem) estado.streak++
-  else if (estado.ultimoAcesso !== null) estado.streak = 1
-  else estado.streak = 1
+  estado.streak = estado.ultimoAcesso === ontem ? estado.streak + 1 : 1
   estado.ultimoAcesso = hoje
   salvarEstado()
 }
 
-// ── RENDER HEADER ─────────────────────────────────────────────
-function renderHeader() {
-  document.getElementById('xp-val').textContent = `⚡ ${estado.xp} XP`
-  document.getElementById('streak-val').textContent = `🔥 ${estado.streak} dias`
+// ── SIDEBAR DESKTOP ───────────────────────────────────────────
+function renderSidebar() {
+  const s = document.getElementById('sidebar')
+  if (!s) return
+  s.innerHTML = `
+    <div class="sidebar-logo">Code<span style="color:var(--purple2)">Wisdom</span></div>
+    <div class="sidebar-item ativo" id="si-home" onclick="navegarTela('home')">
+      <span class="si">🏠</span> Início
+    </div>
+    <div class="sidebar-item" id="si-trilhas" onclick="navegarTela('trilhas')">
+      <span class="si">🗺️</span> Trilhas
+    </div>
+    <div class="sidebar-item" id="si-ranking" onclick="navegarTela('ranking')">
+      <span class="si">🏆</span> Ranking
+    </div>
+    <div class="sidebar-item" id="si-perfil" onclick="navegarTela('perfil')">
+      <span class="si">👤</span> Perfil
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-xp">
+      <div class="xp-num">⚡ ${estado.xp} XP</div>
+      <div class="xp-lbl">Experiência total</div>
+      <div class="streak-num">🔥 ${estado.streak} dias</div>
+    </div>`
 }
 
-// ── TELA INICIAL ──────────────────────────────────────────────
+function renderHeader() {
+  const xv = document.getElementById('xp-val')
+  const sv = document.getElementById('streak-val')
+  if (xv) xv.textContent = `⚡ ${estado.xp} XP`
+  if (sv) sv.textContent = `🔥 ${estado.streak} dias`
+}
+
+// ── HOME ──────────────────────────────────────────────────────
 function renderHome() {
   const animal = ANIMAIS[estado.animalAtual]
   const prog = estado.progresso[estado.animalAtual]
-  const totalLicoes = animal.licoes.length
+  const total = animal.licoes.length
   const feitas = prog.licoesFeitas.length
-  const pct = totalLicoes > 0 ? Math.round((feitas / totalLicoes) * 100) : 0
+  const pct = total > 0 ? Math.round((feitas / total) * 100) : 0
 
-  // mascotes
   const gridHtml = Object.entries(ANIMAIS).map(([key, a]) => {
     const desbloqueado = estado.animaisDesbloqueados.includes(key)
     const p = estado.progresso[key]
-    const tot = a.licoes.length
     const f = p.licoesFeitas.length
-    const pctMini = tot > 0 ? (f / tot) * 100 : 0
-    return `
-      <div class="mascot-btn ${estado.animalAtual === key ? 'ativo' : ''} ${!desbloqueado ? 'bloqueado' : ''}"
-           onclick="${desbloqueado ? `selecionarAnimal('${key}')` : `mostrarBloqueado('${key}')`}">
-        <span class="e">${desbloqueado ? a.emoji : '🔒'}</span>
-        <span>${a.emoji === a.emoji && desbloqueado ? key.charAt(0).toUpperCase() + key.slice(1) : '???'}</span>
-        <div class="progresso-mini"><div class="progresso-mini-fill" style="width:${pctMini}%"></div></div>
-      </div>`
+    const t = a.licoes.length
+    const mini = t > 0 ? (f / t) * 100 : 0
+    return `<div class="mascot-btn ${estado.animalAtual===key?'ativo':''} ${!desbloqueado?'bloqueado':''}"
+      onclick="${desbloqueado ? `selecionarAnimal('${key}')` : `alertaBloqueado('${key}')`}">
+      <span class="e">${desbloqueado ? a.emoji : '🔒'}</span>
+      <span>${desbloqueado ? key[0].toUpperCase()+key.slice(1) : '???'}</span>
+      <div class="progresso-mini"><div class="progresso-mini-fill" style="width:${mini}%"></div></div>
+    </div>`
   }).join('')
 
-  // trilhas
   const trilhasHtml = animal.trilhas.map((t, ti) => {
-    const licoesT = t.licoes.map(i => animal.licoes[i]).filter(Boolean)
-    const feitasT = licoesT.filter(l => prog.licoesFeitas.includes(l.id)).length
-    const bloqueada = ti > 0 && !todasFeitasTrilha(animal, ti - 1)
-    const status = bloqueada ? 'Bloqueada' : feitasT === 0 ? 'Não iniciada' : feitasT === licoesT.length ? 'Concluída ✅' : 'Em andamento'
-    const badgeClass = bloqueada ? 'badge-gray' : feitasT === licoesT.length ? 'badge-green' : feitasT > 0 ? 'badge-blue' : 'badge-gray'
-    const estrelas = feitasT === 0 ? 0 : feitasT === licoesT.length ? 3 : feitasT >= licoesT.length / 2 ? 2 : 1
-    return `
-      <div class="trilha-card ${bloqueada ? 'bloqueada' : ''}" onclick="${!bloqueada ? `iniciarTrilha(${ti})` : ''}">
-        <div class="trilha-icon" style="background:${t.bg}">${t.icon}</div>
-        <div class="trilha-info">
-          <div class="trilha-nome">${t.nome}</div>
-          <div class="trilha-desc">${t.desc}</div>
-          <div class="trilha-meta">
-            <span class="badge ${badgeClass}">${status}</span>
-            <div class="estrelas">${[1,2,3].map(i => `<span class="estrela ${i <= estrelas ? '' : 'vazia'}">★</span>`).join('')}</div>
-          </div>
+    const licoesTrilha = t.licoes.map(i => animal.licoes[i]).filter(Boolean)
+    const feitasT = licoesTrilha.filter(l => prog.licoesFeitas.includes(l.id)).length
+    const bloq = ti > 0 && !trilhaCompleta(animal, ti-1)
+    const status = bloq ? 'Bloqueada' : feitasT===0 ? 'Iniciar' : feitasT===licoesTrilha.length ? 'Concluída ✅' : 'Em andamento'
+    const bc = bloq ? 'badge-gray' : feitasT===licoesTrilha.length ? 'badge-green' : feitasT>0 ? 'badge-blue' : 'badge-amber'
+    const stars = feitasT===0?0:feitasT===licoesTrilha.length?3:feitasT>=licoesTrilha.length/2?2:1
+    return `<div class="trilha-card${bloq?' bloqueada':''}" onclick="${!bloq?`iniciarTrilha(${ti})`:''}">
+      <div class="trilha-icon" style="background:${t.bg}">${t.icon}</div>
+      <div class="trilha-info">
+        <div class="trilha-nome">${t.nome}</div>
+        <div class="trilha-desc">${t.desc}</div>
+        <div class="trilha-meta">
+          <span class="badge ${bc}">${status}</span>
+          <div class="estrelas">${[1,2,3].map(i=>`<span class="estrela${i>stars?' vazia':''}">★</span>`).join('')}</div>
         </div>
-        ${bloqueada ? '<span style="font-size:18px;color:var(--text3)">🔒</span>' : ''}
-      </div>`
+      </div>
+      ${bloq?'<span style="font-size:20px;color:var(--text3)">🔒</span>':''}
+    </div>`
   }).join('')
 
-  // nós de lições
-  const licoesList = animal.licoes
-  const nosHtml = licoesList.slice(0, 8).map((l, i) => {
+  const licoes = animal.licoes
+  const nosHtml = licoes.slice(0, 8).map((l, i) => {
     const feita = prog.licoesFeitas.includes(l.id)
-    const ehAtual = !feita && (i === 0 || prog.licoesFeitas.includes(licoesList[i-1]?.id))
-    const cls = feita ? 'feito' : ehAtual ? 'atual' : 'travado'
-    const linhaFeita = feita ? 'feita' : ''
-    return `${i > 0 ? `<div class="no-linha ${linhaFeita}"></div>` : ''}
-      <div class="no ${cls}" title="${l.titulo}" onclick="${!feita && ehAtual ? `abrirLicao(${i})` : ''}">${feita ? '✓' : ehAtual ? animal.emoji : '🔒'}</div>`
+    const ehAtual = !feita && (i===0 || prog.licoesFeitas.includes(licoes[i-1]?.id))
+    return `${i>0?`<div class="no-linha${prog.licoesFeitas.includes(licoes[i-1]?.id)?' feita':''}"></div>`:''}
+    <div class="no ${feita?'feito':ehAtual?'atual':'travado'}" title="${l.titulo}"
+      onclick="${ehAtual&&!feita?`abrirLicao(${i})`:''}">
+      ${feita?'✓':ehAtual?animal.emoji:'🔒'}
+    </div>`
   }).join('')
 
   document.getElementById('home-content').innerHTML = `
     <div class="home-hero">
       <h1>Code<span>Wisdom</span></h1>
-      <p>Do zero ao especialista — aprenda programação como um jogo</p>
+      <p>Do zero ao especialista — aprenda como um jogo</p>
     </div>
     <div class="mascot-grid">${gridHtml}</div>
     <div class="animal-destaque">
@@ -714,48 +2061,42 @@ function renderHome() {
         <div class="animal-info">
           <div class="fase-pill">${animal.fase}</div>
           <h2>${animal.nome}</h2>
-          <div class="quote" style="color:var(--text3)">${animal.quote}</div>
+          <div class="quote">${animal.quote}</div>
         </div>
       </div>
       <div class="progresso-barra">
-        <div class="prog-lbl">
-          <span>Lição ${feitas} de ${totalLicoes}</span>
-          <span>${pct}%</span>
-        </div>
+        <div class="prog-lbl"><span>Lição ${feitas} de ${total||'?'}</span><span>${pct}%</span></div>
         <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
       </div>
       <div class="trilhas-titulo">Trilhas de hoje</div>
       ${trilhasHtml}
       <div class="nos-licoes">
         <div class="nos-titulo">Próximas lições</div>
-        <div class="nos-row">${nosHtml}</div>
+        <div class="nos-row">${nosHtml||'<p style="color:var(--text3);font-size:13px;padding:8px 0">Lições sendo preparadas 🚧</p>'}</div>
       </div>
     </div>`
 }
 
-function todasFeitasTrilha(animal, ti) {
+function trilhaCompleta(animal, ti) {
   const t = animal.trilhas[ti]
   const prog = estado.progresso[estado.animalAtual]
-  const licoesTrilha = t.licoes.map(i => animal.licoes[i]).filter(Boolean)
-  return licoesTrilha.every(l => prog.licoesFeitas.includes(l.id))
+  return t.licoes.map(i => animal.licoes[i]).filter(Boolean).every(l => prog.licoesFeitas.includes(l.id))
 }
 
 function selecionarAnimal(key) {
-  estado.animalAtual = key
-  salvarEstado()
-  renderHome()
+  estado.animalAtual = key; salvarEstado(); renderHome()
 }
-
-function mostrarBloqueado(key) {
-  const animal = ANIMAIS[key]
-  alert(`🔒 ${animal.nome} ainda está bloqueada!\n\nConclua todas as lições e passe na Prova Final do animal anterior para desbloquear.`)
+function alertaBloqueado(key) {
+  alert(`🔒 ${ANIMAIS[key].nome} está bloqueada!\n\nConclua todas as lições do animal anterior para desbloquear.`)
 }
-
 function iniciarTrilha(ti) {
-  const animal = ANIMAIS[estado.animalAtual]
-  const trilha = animal.trilhas[ti]
-  if (!trilha.licoes.length) { alert('Lições desta trilha ainda estão sendo desenvolvidas! 🚧'); return }
-  abrirLicao(trilha.licoes[0])
+  const a = ANIMAIS[estado.animalAtual]
+  const t = a.trilhas[ti]
+  if (!t.licoes.length) { alert('🚧 Lições desta trilha em desenvolvimento!'); return }
+  // acha a primeira lição não feita
+  const prog = estado.progresso[estado.animalAtual]
+  const primeiraIdx = t.licoes.find(i => !prog.licoesFeitas.includes(a.licoes[i]?.id)) ?? t.licoes[0]
+  abrirLicao(primeiraIdx)
 }
 
 // ── LIÇÃO ─────────────────────────────────────────────────────
@@ -763,121 +2104,166 @@ function abrirLicao(idx) {
   const animal = ANIMAIS[estado.animalAtual]
   licaoAtual = animal.licoes[idx]
   if (!licaoAtual) return
-  etapaAtual = 0
-  exercicioAtual = 0
-  respostasErradas = []
+  etapaAtual = 0; exIdx = 0
+  respostasErradas = []; opcaoSelecionada = null; jaRespondeu = false
   navegarTela('licao')
-  renderLicao()
+  renderEtapa()
 }
 
-function renderLicao() {
-  if (!licaoAtual) return
-  const totalEtapas = 2 + licaoAtual.exercicios.length // teoria + exemplo + exercícios
-  const etapasHtml = Array.from({length: totalEtapas}, (_, i) =>
-    `<div class="etapa-dot ${i < etapaAtual ? 'feita' : i === etapaAtual ? 'ativa' : ''}"></div>`
-  ).join('')
+function renderEtapa() {
+  const totalExercicios = licaoAtual.exercicios.length
+  const totalEtapas = 2 + totalExercicios
+  const pct = Math.round((etapaAtual / totalEtapas) * 100)
 
-  let conteudo = ''
+  const topHtml = `
+    <div class="licao-top">
+      <button class="btn-fechar" onclick="navegarTela('home')" title="Sair">✕</button>
+      <div class="licao-progress-bar">
+        <div class="licao-progress-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="licao-xp-badge">+${licaoAtual.xp} XP</div>
+    </div>`
+
+  let bodyHtml = ''
+  let footerHtml = ''
+
   if (etapaAtual === 0) {
-    conteudo = `
-      <div class="teoria-box fadeIn">
-        ${licaoAtual.teoria}
-      </div>
-      <button class="btn btn-primario" onclick="proximaEtapa()">Entendi — ver exemplo →</button>`
+    // TEORIA
+    bodyHtml = `
+      <div class="questao-label">📖 Aprender</div>
+      <div class="teoria-box fadeIn">${licaoAtual.teoria}</div>`
+    footerHtml = `<button class="btn-acao teoria" onclick="proximaEtapa()">Entendi →</button>`
+
   } else if (etapaAtual === 1) {
-    conteudo = `
+    // EXEMPLO
+    bodyHtml = `
+      <div class="questao-label">💡 Exemplo prático</div>
       <div class="teoria-box fadeIn">
-        <h3>💡 Exemplo prático:</h3>
+        <h3>Veja como funciona na prática:</h3>
         ${licaoAtual.exemplo}
-      </div>
-      <button class="btn btn-primario" onclick="proximaEtapa()">Praticar →</button>`
+      </div>`
+    footerHtml = `<button class="btn-acao teoria" onclick="proximaEtapa()">Praticar →</button>`
+
   } else {
-    const exIdx = etapaAtual - 2
+    // EXERCÍCIO
     const ex = licaoAtual.exercicios[exIdx]
-    conteudo = renderExercicio(ex, exIdx)
+    opcaoSelecionada = null; jaRespondeu = false; inputCerto = false
+
+    if (ex.tipo === 'multipla') {
+      bodyHtml = `
+        <div class="questao-label">Escolha a resposta correta</div>
+        <div class="questao-titulo">${ex.pergunta}</div>
+        <div class="opcoes">
+          ${ex.opcoes.map((op, i) => `
+            <button class="opcao" id="op${i}" onclick="selecionarOpcao(${i})">${op}</button>
+          `).join('')}
+        </div>
+        <div class="feedback-bar" id="feedback"></div>`
+      footerHtml = `<button class="btn-acao verificar" id="btn-acao" onclick="verificarResposta()" disabled>Verificar</button>`
+
+    } else if (ex.tipo === 'completar') {
+      bodyHtml = `
+        <div class="questao-label">Complete o código</div>
+        <div class="questao-titulo">${ex.pergunta}</div>
+        <div class="completar-wrap">
+          <div class="completar-codigo">${ex.codigo}</div>
+          <input class="completar-input" id="resp-input" type="text"
+            placeholder="Digite sua resposta..."
+            oninput="onInputChange()"
+            onkeydown="if(event.key==='Enter'&&!jaRespondeu)verificarResposta()">
+        </div>
+        <div class="feedback-bar" id="feedback"></div>`
+      footerHtml = `<button class="btn-acao verificar" id="btn-acao" onclick="verificarResposta()" disabled>Verificar</button>`
+    }
   }
 
   document.getElementById('licao-content').innerHTML = `
-    <div class="licao-header">
-      <button class="btn-voltar" onclick="navegarTela('home')">← Voltar</button>
-      <span class="licao-titulo">${licaoAtual.titulo}</span>
-      <span class="licao-xp">+${licaoAtual.xp} XP</span>
-    </div>
-    <div class="etapas">${etapasHtml}</div>
-    <div id="conteudo-licao">${conteudo}</div>`
+    <div class="licao-wrap">
+      <div class="licao-body">
+        ${topHtml}
+        ${bodyHtml}
+      </div>
+      <div class="licao-footer">${footerHtml}</div>
+    </div>`
+
+  // foco no input se existir
+  setTimeout(() => {
+    const inp = document.getElementById('resp-input')
+    if (inp) inp.focus()
+  }, 100)
 }
 
-function renderExercicio(ex, idx) {
-  const num = idx + 1
-  const total = licaoAtual.exercicios.length
-  respondido = false
+function selecionarOpcao(i) {
+  if (jaRespondeu) return
+  opcaoSelecionada = i
+  document.querySelectorAll('.opcao').forEach((el, idx) => {
+    el.classList.toggle('selecionada', idx === i)
+  })
+  const btn = document.getElementById('btn-acao')
+  if (btn) btn.disabled = false
+}
+
+function onInputChange() {
+  const inp = document.getElementById('resp-input')
+  const btn = document.getElementById('btn-acao')
+  if (!inp || !btn) return
+  btn.disabled = inp.value.trim() === ''
+}
+
+function verificarResposta() {
+  if (jaRespondeu) { proximaEtapa(); return }
+  const ex = licaoAtual.exercicios[exIdx]
+  let correto = false
 
   if (ex.tipo === 'multipla') {
-    const opcoesHtml = ex.opcoes.map((op, i) =>
-      `<button class="opcao" id="op-${i}" onclick="responderMultipla(${i})">${op}</button>`
-    ).join('')
-    return `
-      <div class="exercicio-box fadeIn">
-        <div class="exercicio-num">Exercício ${num} de ${total}</div>
-        <div class="exercicio-pergunta">${ex.pergunta}</div>
-        <div class="opcoes">${opcoesHtml}</div>
-        <div class="feedback" id="feedback"></div>
-      </div>
-      <button class="btn btn-primario" id="btn-proxima" onclick="proximaEtapa()" disabled>Próximo →</button>`
+    if (opcaoSelecionada === null) return
+    correto = opcaoSelecionada === ex.correta
+    jaRespondeu = true
+    document.querySelectorAll('.opcao').forEach((el, i) => {
+      el.disabled = true
+      el.classList.remove('selecionada')
+      if (i === ex.correta) el.classList.add('correta')
+      else if (i === opcaoSelecionada && !correto) el.classList.add('errada')
+    })
+  } else {
+    const inp = document.getElementById('resp-input')
+    if (!inp || inp.value.trim() === '') return
+    correto = inp.value.trim().toLowerCase() === ex.resposta.toLowerCase()
+    jaRespondeu = true; inputCerto = correto
+    inp.disabled = true
+    inp.classList.add(correto ? 'correta' : 'errada')
   }
 
-  if (ex.tipo === 'completar') {
-    return `
-      <div class="exercicio-box fadeIn">
-        <div class="exercicio-num">Exercício ${num} de ${total}</div>
-        <div class="exercicio-pergunta">${ex.pergunta}</div>
-        <div class="completar-wrap">
-          <div class="completar-codigo">${ex.codigo}</div>
-          <input class="completar-input" id="resp-input" type="text" placeholder="Digite sua resposta..."
-            onkeydown="if(event.key==='Enter')responderCompletar()">
-        </div>
-        <div class="feedback" id="feedback"></div>
-      </div>
-      <button class="btn btn-secundario" onclick="responderCompletar()">Verificar</button>
-      <button class="btn btn-primario" id="btn-proxima" onclick="proximaEtapa()" disabled>Próximo →</button>`
+  if (!correto) registrarErro(ex.pergunta)
+
+  // Feedback estilo Duolingo
+  const fb = document.getElementById('feedback')
+  if (fb) {
+    fb.className = `feedback-bar visivel ${correto ? 'ok' : 'erro'}`
+    fb.innerHTML = `
+      <div class="feedback-titulo">${correto ? '✅ Correto!' : '❌ Resposta errada'}</div>
+      <div class="feedback-texto">${ex.explicacao}</div>`
+  }
+
+  const btn = document.getElementById('btn-acao')
+  if (btn) {
+    btn.textContent = 'Continuar'
+    btn.className = 'btn-acao continuar'
+    btn.disabled = false
+    btn.onclick = proximaEtapa
   }
 }
 
-function responderMultipla(idx) {
-  if (respondido) return
-  respondido = true
-  const ex = licaoAtual.exercicios[etapaAtual - 2]
-  const correta = idx === ex.correta
-  document.querySelectorAll('.opcao').forEach(b => b.disabled = true)
-  document.getElementById(`op-${idx}`).classList.add(correta ? 'correta' : 'errada')
-  if (!correta) {
-    document.getElementById(`op-${ex.correta}`).classList.add('correta')
-    registrarErro(ex.pergunta)
+function proximaEtapa() {
+  const totalEtapas = 2 + licaoAtual.exercicios.length
+  if (etapaAtual < 1) { etapaAtual++; renderEtapa(); return }
+  if (etapaAtual === 1) { etapaAtual++; exIdx = 0; renderEtapa(); return }
+  // está em exercício
+  if (exIdx < licaoAtual.exercicios.length - 1) {
+    exIdx++; etapaAtual++; renderEtapa()
+  } else {
+    concluirLicao()
   }
-  mostrarFeedback(correta, ex.explicacao)
-  document.getElementById('btn-proxima').disabled = false
-}
-
-function responderCompletar() {
-  if (respondido) return
-  const ex = licaoAtual.exercicios[etapaAtual - 2]
-  const input = document.getElementById('resp-input')
-  if (!input) return
-  const resp = input.value.trim().toLowerCase()
-  const correta = resp === ex.resposta.toLowerCase()
-  respondido = true
-  input.disabled = true
-  input.classList.add(correta ? 'correta' : 'errada')
-  if (!correta) registrarErro(ex.pergunta)
-  mostrarFeedback(correta, ex.explicacao)
-  document.getElementById('btn-proxima').disabled = false
-}
-
-function mostrarFeedback(ok, texto) {
-  const el = document.getElementById('feedback')
-  if (!el) return
-  el.className = `feedback visivel ${ok ? 'ok' : 'erro'}`
-  el.innerHTML = `<strong>${ok ? '✅ Correto!' : '❌ Incorreto'}</strong>${texto}`
 }
 
 function registrarErro(pergunta) {
@@ -887,163 +2273,143 @@ function registrarErro(pergunta) {
   salvarEstado()
 }
 
-function proximaEtapa() {
-  const totalEtapas = 2 + licaoAtual.exercicios.length
-  if (etapaAtual < totalEtapas - 1) {
-    etapaAtual++
-    renderLicao()
-  } else {
-    concluirLicao()
-  }
-}
-
 function concluirLicao() {
   const prog = estado.progresso[estado.animalAtual]
+  let xpGanho = 0
   if (!prog.licoesFeitas.includes(licaoAtual.id)) {
     prog.licoesFeitas.push(licaoAtual.id)
-    estado.xp += licaoAtual.xp
+    xpGanho = licaoAtual.xp
+    estado.xp += xpGanho
     salvarEstado()
-    mostrarXpPopup(licaoAtual.xp)
+    mostrarXpPopup(xpGanho)
     verificarDesbloqueio()
   }
+  renderHeader(); renderSidebar()
 
-  const errosHtml = respostasErradas.length > 0
-    ? `<div class="erros-box">
-        <h4>📌 Pontos para revisar (${respostasErradas.length} erro${respostasErradas.length > 1 ? 's' : ''}):</h4>
-        <ul>${respostasErradas.map(e => `<li>${e}</li>`).join('')}</ul>
-       </div>` : ''
+  const errosHtml = respostasErradas.length > 0 ? `
+    <div class="erros-resumo">
+      <h4>📌 Revise esses pontos (${respostasErradas.length} erro${respostasErradas.length>1?'s':''}):</h4>
+      <ul>${respostasErradas.map(e=>`<li>${e.substring(0,80)}${e.length>80?'...':''}</li>`).join('')}</ul>
+    </div>` : ''
 
-  document.getElementById('conteudo-licao').innerHTML = `
-    <div class="conclusao">
-      <div class="trophy">${respostasErradas.length === 0 ? '🏆' : '📚'}</div>
-      <h2>${respostasErradas.length === 0 ? 'Perfeito!' : 'Lição Concluída!'}</h2>
-      <p>${respostasErradas.length === 0 ? 'Nenhum erro! Você dominou essa lição.' : `Você errou ${respostasErradas.length} questão(ões). Revise os pontos abaixo.`}</p>
-      <div class="xp-ganho">⚡ +${licaoAtual.xp} XP</div>
+  document.getElementById('licao-content').innerHTML = `
+    <div class="conclusao fadeIn">
+      <span class="trophy">${respostasErradas.length===0?'🏆':'📚'}</span>
+      <h2>${respostasErradas.length===0?'Perfeito! Zero erros!':'Lição concluída!'}</h2>
+      <p>${respostasErradas.length===0?'Você dominou essa lição. Continue assim!':
+        `Você errou ${respostasErradas.length} questão(ões). A revisão ficou salva no seu perfil.`}</p>
+      <div class="xp-ganho">⚡ +${xpGanho} XP</div>
       ${errosHtml}
-      <button class="btn btn-primario" onclick="navegarTela('home');renderHome()">Continuar →</button>
+      <button class="btn-acao continuar" style="max-width:400px;margin:0 auto;display:block"
+        onclick="navegarTela('home')">Continuar →</button>
     </div>`
-  renderHeader()
 }
 
 function verificarDesbloqueio() {
   const animal = ANIMAIS[estado.animalAtual]
   const prog = estado.progresso[estado.animalAtual]
-  const todasFeitas = animal.licoes.every(l => prog.licoesFeitas.includes(l.id))
-  if (todasFeitas) {
-    const ordem = ['coruja', 'elefante', 'tartaruga', 'lobo', 'corvo', 'leao']
-    const idx = ordem.indexOf(estado.animalAtual)
-    if (idx < ordem.length - 1) {
-      const proximo = ordem[idx + 1]
-      if (!estado.animaisDesbloqueados.includes(proximo)) {
-        estado.animaisDesbloqueados.push(proximo)
-        salvarEstado()
-        setTimeout(() => alert(`🎉 Parabéns! Você desbloqueou ${ANIMAIS[proximo].emoji} ${ANIMAIS[proximo].nome}!`), 500)
-      }
+  if (animal.licoes.length > 0 && animal.licoes.every(l => prog.licoesFeitas.includes(l.id))) {
+    const ordem = ['coruja','elefante','tartaruga','lobo','corvo','leao']
+    const prox = ordem[ordem.indexOf(estado.animalAtual)+1]
+    if (prox && !estado.animaisDesbloqueados.includes(prox)) {
+      estado.animaisDesbloqueados.push(prox); salvarEstado()
+      setTimeout(() => alert(`🎉 ${ANIMAIS[prox].emoji} ${ANIMAIS[prox].nome} desbloqueada!`), 600)
     }
   }
 }
 
 function mostrarXpPopup(xp) {
   const el = document.createElement('div')
-  el.className = 'xp-popup'
-  el.textContent = `+${xp} XP ⚡`
+  el.className = 'xp-popup'; el.textContent = `+${xp} XP ⚡`
   document.body.appendChild(el)
-  setTimeout(() => el.remove(), 2000)
+  setTimeout(() => el.remove(), 2200)
 }
 
 // ── PERFIL ────────────────────────────────────────────────────
 function renderPerfil() {
-  const totalXp = estado.xp
-  const totalFeitas = Object.values(estado.progresso).reduce((s, p) => s + p.licoesFeitas.length, 0)
-  const totalErros = Object.values(estado.progresso).reduce((s, p) => {
-    return s + Object.values(p.erros).reduce((a, b) => a + b, 0)
-  }, 0)
-
-  // débito técnico
+  const totalFeitas = Object.values(estado.progresso).reduce((s,p)=>s+p.licoesFeitas.length,0)
   const todosErros = []
-  Object.values(estado.progresso).forEach(p => {
-    Object.entries(p.erros).forEach(([pergunta, count]) => {
-      todosErros.push({ pergunta, count })
-    })
-  })
-  todosErros.sort((a, b) => b.count - a.count)
-
-  const debitoHtml = todosErros.length === 0
-    ? '<p style="color:var(--text3);font-size:14px">Nenhum erro registrado ainda. Continue estudando!</p>'
-    : todosErros.slice(0, 8).map(e => `
-        <div class="debito-item">
-          <span>📌 ${e.pergunta.substring(0, 50)}${e.pergunta.length > 50 ? '...' : ''}</span>
-          <span class="debito-count">${e.count}x</span>
-        </div>`).join('')
+  Object.values(estado.progresso).forEach(p =>
+    Object.entries(p.erros).forEach(([q,c]) => todosErros.push({q,c})))
+  todosErros.sort((a,b)=>b.c-a.c)
 
   document.getElementById('perfil-content').innerHTML = `
-    <h2 style="font-size:22px;font-weight:800;margin-bottom:20px">👤 Meu Perfil</h2>
+    <h2 style="font-size:22px;font-weight:900;margin-bottom:20px">👤 Meu Perfil</h2>
     <div class="perfil-stats">
-      <div class="stat-card"><div class="num">${totalXp}</div><div class="lbl">XP Total</div></div>
+      <div class="stat-card"><div class="num">${estado.xp}</div><div class="lbl">XP Total</div></div>
       <div class="stat-card"><div class="num">${estado.streak}</div><div class="lbl">Dias seguidos</div></div>
       <div class="stat-card"><div class="num">${totalFeitas}</div><div class="lbl">Lições feitas</div></div>
-      <div class="stat-card"><div class="num">${totalErros}</div><div class="lbl">Erros totais</div></div>
+      <div class="stat-card"><div class="num">${todosErros.reduce((s,e)=>s+e.c,0)}</div><div class="lbl">Erros totais</div></div>
     </div>
     <div class="debito-tecnico">
-      <h3>📌 Débito Técnico — revisão prioritária</h3>
-      ${debitoHtml}
+      <h3>📌 Débito Técnico — revise em ordem</h3>
+      ${todosErros.length===0
+        ? '<p style="color:var(--text3);font-size:14px">Nenhum erro ainda. Continue assim! 🎉</p>'
+        : todosErros.slice(0,10).map(e=>`
+          <div class="debito-item">
+            <span>${e.q.substring(0,60)}${e.q.length>60?'...':''}</span>
+            <span class="debito-count">${e.c}×</span>
+          </div>`).join('')}
     </div>
-    <button class="btn btn-secundario" style="margin-top:20px" onclick="if(confirm('Resetar todo o progresso?')){localStorage.clear();location.reload()}">
+    <button class="btn btn-secundario" style="margin-top:20px"
+      onclick="if(confirm('Resetar todo o progresso?')){localStorage.clear();location.reload()}">
       🗑️ Resetar progresso
     </button>`
 }
 
-// ── NAVEGAÇÃO ─────────────────────────────────────────────────
-function navegarTela(id) {
-  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'))
-  document.getElementById(`tela-${id}`).classList.add('ativa')
-  const navMap = { home: 0, trilhas: 1, licao: 2, perfil: 4 }
-  const navItems = document.querySelectorAll('.nav-item')
-  if (navMap[id] !== undefined) navItems[navMap[id]]?.classList.add('ativo')
-
-  if (id === 'home') renderHome()
-  if (id === 'perfil') renderPerfil()
-  if (id === 'trilhas') renderTrilhasCompleto()
-}
-
+// ── TRILHAS COMPLETO ──────────────────────────────────────────
 function renderTrilhasCompleto() {
   const animal = ANIMAIS[estado.animalAtual]
   const prog = estado.progresso[estado.animalAtual]
-
-  const html = animal.trilhas.map((t, ti) => {
-    const licoesTrilha = t.licoes.map(i => animal.licoes[i]).filter(Boolean)
-    const bloqueada = ti > 0 && !todasFeitasTrilha(animal, ti - 1)
-    const licoesHtml = licoesTrilha.map((l, li) => {
-      const feita = prog.licoesFeitas.includes(l.id)
-      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:18px">${feita ? '✅' : '○'}</span>
-        <span style="flex:1;font-size:14px;color:${feita ? 'var(--text)' : 'var(--text2)'}">${l.titulo}</span>
-        <span style="font-size:11px;color:var(--purple2);font-weight:700">+${l.xp} XP</span>
-        ${!feita && !bloqueada ? `<button class="btn" style="padding:4px 12px;font-size:12px;background:var(--purple);color:#fff;border-radius:8px" onclick="abrirLicao(${t.licoes[li]})">Iniciar</button>` : ''}
-      </div>`
-    }).join('')
-
-    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;${bloqueada ? 'opacity:0.5' : ''}">
-      <div style="padding:14px 16px;display:flex;gap:12px;align-items:center;background:var(--surface2)">
-        <div style="width:40px;height:40px;border-radius:10px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${t.icon}</div>
-        <div>
-          <div style="font-size:15px;font-weight:700">${t.nome}</div>
-          <div style="font-size:12px;color:var(--text2)">${t.desc}</div>
-        </div>
-        ${bloqueada ? '<span style="margin-left:auto;font-size:20px">🔒</span>' : ''}
-      </div>
-      <div style="padding:0 16px">${licoesHtml || '<p style="padding:12px 0;color:var(--text3);font-size:13px">🚧 Lições em desenvolvimento</p>'}</div>
-    </div>`
-  }).join('')
-
   document.getElementById('trilhas-content').innerHTML = `
-    <h2 style="font-size:22px;font-weight:800;margin-bottom:20px">${animal.emoji} ${animal.nome}</h2>
-    ${html}`
+    <h2 style="font-size:20px;font-weight:900;margin-bottom:20px">${animal.emoji} ${animal.nome}</h2>
+    ${animal.trilhas.map((t,ti)=>{
+      const licoesTrilha = t.licoes.map(i=>animal.licoes[i]).filter(Boolean)
+      const bloq = ti>0 && !trilhaCompleta(animal,ti-1)
+      return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;${bloq?'opacity:0.45':''}">
+        <div style="padding:14px 16px;display:flex;gap:12px;align-items:center;background:var(--surface2)">
+          <div style="width:42px;height:42px;border-radius:10px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${t.icon}</div>
+          <div><div style="font-size:14px;font-weight:800">${t.nome}</div><div style="font-size:12px;color:var(--text2)">${t.desc}</div></div>
+          ${bloq?'<span style="margin-left:auto;font-size:20px">🔒</span>':''}
+        </div>
+        <div style="padding:0 16px">
+          ${licoesTrilha.map((l,li)=>{
+            const feita = prog.licoesFeitas.includes(l.id)
+            return `<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:18px">${feita?'✅':'⭕'}</span>
+              <span style="flex:1;font-size:14px;font-weight:600;color:${feita?'var(--green2)':'var(--text)'}">${l.titulo}</span>
+              <span style="font-size:11px;color:var(--purple2);font-weight:700">+${l.xp} XP</span>
+              ${!feita&&!bloq?`<button onclick="abrirLicao(${t.licoes[li]})"
+                style="padding:6px 14px;font-size:12px;font-weight:700;background:var(--purple);color:#fff;border:none;border-radius:8px;cursor:pointer">
+                ${prog.licoesFeitas.includes(l.id)?'Revisar':'Iniciar'}</button>`:''}
+            </div>`}).join('') || '<p style="padding:12px 0;color:var(--text3);font-size:13px">🚧 Em desenvolvimento</p>'}
+        </div>
+      </div>`}).join('')}`
+}
+
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────
+function navegarTela(id) {
+  document.querySelectorAll('.tela').forEach(t=>t.classList.remove('ativa'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('ativo'))
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('ativo'))
+  document.getElementById(`tela-${id}`)?.classList.add('ativa')
+  document.querySelector(`.nav-item[onclick*="'${id}'"]`)?.classList.add('ativo')
+  const si = document.getElementById(`si-${id}`)
+  if (si) si.classList.add('ativo')
+  // scroll topo
+  window.scrollTo(0, 0)
+  if (id==='home') renderHome()
+  if (id==='perfil') renderPerfil()
+  if (id==='trilhas') renderTrilhasCompleto()
+  if (id==='ranking') {
+    const r = document.getElementById('rank-xp')
+    if (r) r.textContent = estado.xp+' XP'
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────
 verificarStreak()
+renderSidebar()
 renderHeader()
 navegarTela('home')
 
