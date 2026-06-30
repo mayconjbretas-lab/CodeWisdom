@@ -91,8 +91,26 @@ const ANIMAIS = {
       { icon:'⚡', bg:'rgba(236,72,153,0.2)',  nome:'JS avançado',           desc:'Promises, funcional, erros, classes, regex', licoes:[19,20,21,22,23] },
       { icon:'🧠', bg:'rgba(124,111,247,0.2)', nome:'Algoritmos avançados',  desc:'Generators, DP, greedy, grafos', licoes:[24,25,26,27,28,29] },
       { icon:'🌐', bg:'rgba(16,185,129,0.2)',  nome:'Web e inglês técnico',  desc:'APIs do navegador, ordenação avançada, inglês', licoes:[30,31,32] },
-      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final',         desc:'Visualizador de algoritmos', licoes:[33] },
-      { icon:'📝', bg:'rgba(239,68,68,0.2)',   nome:'Mini-Prova Final',      desc:'Avaliação completa da Fase 1', licoes:[34] }
+      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final 1',       desc:'Visualizador de algoritmos', licoes:[33] },
+      { icon:'➗', bg:'rgba(59,130,246,0.2)',   nome:'Matemática e dados',    desc:'Math, binário, strings, datas, JSON', licoes:[35,36,37,38,39] },
+      { icon:'🛠️', bg:'rgba(236,72,153,0.2)',  nome:'Boas práticas',         desc:'Padrões, debugging, inglês de time, clean code', licoes:[40,41,42,43,44] },
+      { icon:'🧪', bg:'rgba(124,111,247,0.2)', nome:'Qualidade e tipos',     desc:'Testes, TypeScript, segurança, imutabilidade', licoes:[46,47,48,49] },
+      { icon:'🎯', bg:'rgba(16,185,129,0.2)',  nome:'Padrões de algoritmo',  desc:'Palíndromos, dois ponteiros, módulos, formulários', licoes:[50,51,52,53,54] },
+      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final 2',       desc:'App de tarefas com persistência', licoes:[55] },
+      { icon:'🏔️', bg:'rgba(59,130,246,0.2)',  nome:'Estruturas avançadas',  desc:'Heaps, Union-Find, KMP, ordenação topológica', licoes:[57,61,62,64] },
+      { icon:'🔌', bg:'rgba(236,72,153,0.2)',  nome:'Concorrência e APIs',   desc:'Event Loop, WebSockets, design de API, inglês', licoes:[58,59,60,63] },
+      { icon:'🧱', bg:'rgba(124,111,247,0.2)', nome:'Web Components',        desc:'Componentes nativos do navegador', licoes:[65] },
+      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final 3',       desc:'Chat em tempo real com WebSockets', licoes:[66] },
+      { icon:'🌲', bg:'rgba(59,130,246,0.2)',  nome:'Algoritmos de elite',   desc:'Tries, Dijkstra, Backtracking', licoes:[68,69,70] },
+      { icon:'✨', bg:'rgba(16,185,129,0.2)',  nome:'Maturidade profissional',desc:'Acessibilidade, performance, entrevistas, refatoração, docs', licoes:[71,72,73,74,76] },
+      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final 4',       desc:'Jogo da memória completo', licoes:[77] },
+      { icon:'🎓', bg:'rgba(124,111,247,0.2)', nome:'Mestria avançada',      desc:'Currying, Proxy, matrizes, padrões, Workers, hash', licoes:[79,80,81,82,83,84,85,86,87,88,89,90] },
+      { icon:'🏆', bg:'rgba(16,185,129,0.2)',  nome:'Marco final',           desc:'Revisão geral e celebração das 100 lições', licoes:[91,92] },
+      { icon:'➕', bg:'rgba(59,130,246,0.2)',   nome:'Matemática discreta',   desc:'Lógica proposicional, conjuntos, combinatória, probabilidade', licoes:[93,94,95,96,97] },
+      { icon:'🗣️', bg:'rgba(236,72,153,0.2)',  nome:'Inglês profissional',   desc:'RFCs, gírias, documentação, code review, standups', licoes:[98,99,100,104,105] },
+      { icon:'🔢', bg:'rgba(124,111,247,0.2)', nome:'Matemática aplicada',   desc:'Álgebra booleana, precisão numérica, sequências, geometria, primos', licoes:[101,102,103,106,107] },
+      { icon:'🎯', bg:'rgba(16,185,129,0.2)',  nome:'Síntese final',         desc:'Conectando matemática e comunicação profissional', licoes:[108] },
+      { icon:'📝', bg:'rgba(239,68,68,0.2)',   nome:'Prova Final',           desc:'Avaliação completa da Fase 1 — desbloqueia o Elefante', licoes:[109] }
     ]
   },
   elefante: {
