@@ -1,7 +1,7 @@
 // CodeWisdom — Service Worker
 // IMPORTANTE: sempre que atualizar o app, mude o número da versão abaixo (v1 -> v2 -> v3...)
 // Isso força todos os usuários a baixarem a versão nova automaticamente, sem precisar desinstalar.
-const VERSAO = 'cw-v3'
+const VERSAO = 'cw-v5'
 
 const ASSETS = [
   './',

@@ -8,12 +8,12 @@ const ESTADO_INICIAL = {
   animalAtual: 'coruja',
   animaisDesbloqueados: ['coruja'],
   progresso: {
-    coruja:    { licoesFeitas: [], erros: {} },
-    elefante:  { licoesFeitas: [], erros: {} },
-    tartaruga: { licoesFeitas: [], erros: {} },
-    lobo:      { licoesFeitas: [], erros: {} },
-    corvo:     { licoesFeitas: [], erros: {} },
-    leao:      { licoesFeitas: [], erros: {} }
+    coruja:    { licoesFeitas: [], erros: {}, revisoesCruzadas: {} },
+    elefante:  { licoesFeitas: [], erros: {}, revisoesCruzadas: {} },
+    tartaruga: { licoesFeitas: [], erros: {}, revisoesCruzadas: {} },
+    lobo:      { licoesFeitas: [], erros: {}, revisoesCruzadas: {} },
+    corvo:     { licoesFeitas: [], erros: {}, revisoesCruzadas: {} },
+    leao:      { licoesFeitas: [], erros: {}, revisoesCruzadas: {} }
   }
 }
 
@@ -87,7 +87,12 @@ const ANIMAIS = {
       { icon:'🧩', bg:'rgba(124,111,247,0.2)', nome:'Lógica de programação', desc:'Variáveis, condições e loops', licoes:[0,1,2,3,4,5] },
       { icon:'⚙️', bg:'rgba(16,185,129,0.2)',  nome:'Funções e estruturas',  desc:'Funções, arrays, objetos, escopo', licoes:[6,7,8,9] },
       { icon:'🔍', bg:'rgba(245,158,11,0.2)',  nome:'Algoritmos',            desc:'Busca, ordenação, Big O, recursão', licoes:[10,11,12,13] },
-      { icon:'📝', bg:'rgba(239,68,68,0.2)',   nome:'Mini-Prova',            desc:'Avaliação da Fase 1', licoes:[14] }
+      { icon:'🗂️', bg:'rgba(59,130,246,0.2)',  nome:'Estruturas de dados',   desc:'Sets, Maps, pilhas, filas, árvores, hash', licoes:[14,15,16,17,18] },
+      { icon:'⚡', bg:'rgba(236,72,153,0.2)',  nome:'JS avançado',           desc:'Promises, funcional, erros, classes, regex', licoes:[19,20,21,22,23] },
+      { icon:'🧠', bg:'rgba(124,111,247,0.2)', nome:'Algoritmos avançados',  desc:'Generators, DP, greedy, grafos', licoes:[24,25,26,27,28,29] },
+      { icon:'🌐', bg:'rgba(16,185,129,0.2)',  nome:'Web e inglês técnico',  desc:'APIs do navegador, ordenação avançada, inglês', licoes:[30,31,32] },
+      { icon:'🚀', bg:'rgba(245,158,11,0.2)',  nome:'Projeto Final',         desc:'Visualizador de algoritmos', licoes:[33] },
+      { icon:'📝', bg:'rgba(239,68,68,0.2)',   nome:'Mini-Prova Final',      desc:'Avaliação completa da Fase 1', licoes:[34] }
     ]
   },
   elefante: {
@@ -188,6 +193,9 @@ function renderSidebar() {
     </div>
     <div class="sidebar-item" id="si-ranking" onclick="navegarTela('ranking')">
       <span class="si">🏆</span> Ranking
+    </div>
+    <div class="sidebar-item" id="si-revisao" onclick="navegarTela('revisao')">
+      <span class="si">🔀</span> Revisão Cruzada
     </div>
     <div class="sidebar-item" id="si-perfil" onclick="navegarTela('perfil')">
       <span class="si">👤</span> Perfil
@@ -292,7 +300,178 @@ function renderHome() {
 function trilhaCompleta(animal, ti) {
   const t = animal.trilhas[ti]
   const prog = estado.progresso[estado.animalAtual]
+  const licoesOk = t.licoes.map(i => animal.licoes[i]).filter(Boolean).every(l => prog.licoesFeitas.includes(l.id))
+  if (!licoesOk) return false
+  // a partir da trilha 2 (índice 1), exige revisão cruzada aprovada daquela trilha
+  if (ti >= 1) {
+    const aprovado = prog.revisoesCruzadas[ti] && prog.revisoesCruzadas[ti].aprovado
+    if (!aprovado) return false
+  }
+  return true
+}
+
+// ── REVISÃO CRUZADA ──────────────────────────────────────────
+// Gera N perguntas cumulativas (trilhas 0..ti) reaproveitando exercícios já feitos
+function gerarRevisaoCruzada(animal, ti) {
+  const trilhasEnvolvidas = animal.trilhas.slice(0, ti + 1)
+  const todosExercicios = []
+  trilhasEnvolvidas.forEach((t, idxT) => {
+    t.licoes.map(i => animal.licoes[i]).filter(Boolean).forEach(licao => {
+      (licao.exercicios || []).forEach(ex => {
+        if (ex.tipo === 'multipla') {
+          todosExercicios.push({ ...ex, origemTrilha: idxT, origemLicao: licao.titulo })
+        }
+      })
+    })
+  })
+  // embaralha e pega até 8 perguntas, priorizando cobertura de todas as trilhas envolvidas
+  const embaralhado = [...todosExercicios].sort(() => Math.random() - 0.5)
+  const max = Math.min(8, embaralhado.length)
+  return embaralhado.slice(0, max)
+}
+
+function podeAcessarRevisao(animal, ti) {
+  // só pode tentar a revisão da trilha ti se já completou as lições dela
+  const t = animal.trilhas[ti]
+  const prog = estado.progresso[estado.animalAtual]
   return t.licoes.map(i => animal.licoes[i]).filter(Boolean).every(l => prog.licoesFeitas.includes(l.id))
+}
+
+let revisaoAtual = null // { ti, perguntas, idx, acertos, respostas }
+
+function iniciarRevisaoCruzada(ti) {
+  const animal = ANIMAIS[estado.animalAtual]
+  if (!podeAcessarRevisao(animal, ti)) {
+    alert('🔒 Termine todas as lições desta trilha antes de fazer a revisão cruzada!')
+    return
+  }
+  const perguntas = gerarRevisaoCruzada(animal, ti)
+  if (perguntas.length === 0) {
+    alert('Sem exercícios suficientes ainda para gerar a revisão cruzada desta trilha.')
+    return
+  }
+  revisaoAtual = { ti, perguntas, idx: 0, acertos: 0, respostas: [] }
+  navegarTela('licao')
+  renderRevisaoCruzada()
+}
+
+function renderRevisaoCruzada() {
+  const { ti, perguntas, idx } = revisaoAtual
+  const animal = ANIMAIS[estado.animalAtual]
+  const pct = Math.round((idx / perguntas.length) * 100)
+  const ex = perguntas[idx]
+
+  const topHtml = `
+    <div class="licao-top">
+      <button class="btn-fechar" onclick="navegarTela('revisao')" title="Sair">✕</button>
+      <div class="licao-progress-bar"><div class="licao-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div></div>
+      <div class="licao-xp-badge" style="background:rgba(245,158,11,0.15);color:#fcd34d">🔀 Cruzada</div>
+    </div>`
+
+  const opcoesHtml = ex.opcoes.map((op, i) =>
+    `<button class="opcao" id="rop${i}" onclick="responderRevisao(${i})">${op}</button>`
+  ).join('')
+
+  document.getElementById('licao-content').innerHTML = `
+    <div class="licao-wrap">
+      <div class="licao-body">
+        ${topHtml}
+        <div class="questao-label">🔀 Revisão Cruzada — pergunta ${idx+1} de ${perguntas.length} (de: ${ex.origemLicao})</div>
+        <div class="questao-titulo">${ex.pergunta}</div>
+        <div class="opcoes">${opcoesHtml}</div>
+        <div class="feedback-bar" id="feedback"></div>
+      </div>
+      <div class="licao-footer"><button class="btn-acao verificar" id="btn-acao" onclick="proximaRevisao()" disabled>Verificar</button></div>
+    </div>`
+}
+
+function responderRevisao(i) {
+  if (jaRespondeu) return
+  jaRespondeu = true
+  const { perguntas, idx } = revisaoAtual
+  const ex = perguntas[idx]
+  const correto = i === ex.correta
+  if (correto) { revisaoAtual.acertos++; somAcerto() } else { somErro() }
+  revisaoAtual.respostas.push({ pergunta: ex.pergunta, correto })
+  document.querySelectorAll('.opcao').forEach((el, j) => {
+    el.disabled = true
+    if (j === ex.correta) el.classList.add('correta')
+    else if (j === i && !correto) el.classList.add('errada')
+  })
+  const fb = document.getElementById('feedback')
+  fb.className = `feedback-bar visivel ${correto?'ok':'erro'}`
+  fb.innerHTML = `<div class="feedback-titulo">${correto?'✅ Correto!':'❌ Incorreto'}</div><div class="feedback-texto">${ex.explicacao}</div>`
+  const btn = document.getElementById('btn-acao')
+  btn.disabled = false
+  btn.textContent = 'Continuar'
+  btn.className = 'btn-acao continuar'
+}
+
+function proximaRevisao() {
+  jaRespondeu = false
+  revisaoAtual.idx++
+  if (revisaoAtual.idx < revisaoAtual.perguntas.length) {
+    renderRevisaoCruzada()
+  } else {
+    concluirRevisaoCruzada()
+  }
+}
+
+function concluirRevisaoCruzada() {
+  const { ti, perguntas, acertos } = revisaoAtual
+  const pct = Math.round((acertos / perguntas.length) * 100)
+  const aprovado = pct >= 80
+  const prog = estado.progresso[estado.animalAtual]
+  prog.revisoesCruzadas[ti] = { aprovado, pct, data: Date.now() }
+  salvarEstado()
+  if (aprovado) { somConclusao() }
+
+  document.getElementById('licao-content').innerHTML = `
+    <div class="conclusao fadeIn">
+      <span class="trophy">${aprovado?'🎉':'📚'}</span>
+      <h2>${aprovado?'Revisão Cruzada aprovada!':'Quase lá!'}</h2>
+      <p>Você acertou ${acertos} de ${perguntas.length} (${pct}%). ${aprovado?'Mínimo de 80% atingido — próxima trilha desbloqueada!':'Mínimo de 80% necessário. Revise os pontos errados e tente novamente.'}</p>
+      ${!aprovado ? `<div class="erros-resumo"><h4>📌 Pontos para revisar:</h4><ul>${revisaoAtual.respostas.filter(r=>!r.correto).map(r=>`<li>${r.pergunta.substring(0,70)}...</li>`).join('')}</ul></div>` : ''}
+      <button class="btn-acao ${aprovado?'continuar':'verificar'}" style="max-width:400px;margin:0 auto;display:block" onclick="navegarTela('revisao')">
+        ${aprovado?'Continuar →':'Tentar novamente'}
+      </button>
+    </div>`
+  renderHeader(); renderSidebar()
+}
+
+// Tela de listagem das revisões cruzadas disponíveis
+function renderRevisaoTela() {
+  const animal = ANIMAIS[estado.animalAtual]
+  const prog = estado.progresso[estado.animalAtual]
+  const trilhasComRevisao = animal.trilhas.map((t, ti) => ({ t, ti })).filter(({ti}) => ti >= 1)
+
+  if (trilhasComRevisao.length === 0) {
+    document.getElementById('revisao-content').innerHTML = `
+      <h2 style="font-size:22px;font-weight:900;margin-bottom:12px">🔀 Revisão Cruzada</h2>
+      <p style="color:var(--text2);font-size:14px">Disponível a partir da 2ª trilha de cada animal. Continue estudando!</p>`
+    return
+  }
+
+  document.getElementById('revisao-content').innerHTML = `
+    <h2 style="font-size:22px;font-weight:900;margin-bottom:8px">🔀 Revisão Cruzada</h2>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:20px">A cada trilha, você revisa tudo que veio antes junto — mínimo 80% para avançar.</p>
+    ${trilhasComRevisao.map(({t, ti}) => {
+      const disponivel = podeAcessarRevisao(animal, ti)
+      const rev = prog.revisoesCruzadas[ti]
+      const status = !disponivel ? 'Bloqueada — termine a trilha primeiro'
+        : rev?.aprovado ? `Aprovado (${rev.pct}%) ✅`
+        : rev ? `Reprovado (${rev.pct}%) — tente de novo`
+        : 'Disponível agora!'
+      const corBadge = !disponivel ? 'badge-gray' : rev?.aprovado ? 'badge-green' : rev ? 'badge-red' : 'badge-amber'
+      return `<div class="trilha-card${!disponivel?' bloqueada':''}" onclick="${disponivel?`iniciarRevisaoCruzada(${ti})`:''}">
+        <div class="trilha-icon" style="background:rgba(245,158,11,0.2)">🔀</div>
+        <div class="trilha-info">
+          <div class="trilha-nome">Revisão até "${t.nome}"</div>
+          <div class="trilha-desc">Cruza trilhas 1${ti>1?` a ${ti+1}`:` e 2`}</div>
+          <div class="trilha-meta"><span class="badge ${corBadge}">${status}</span></div>
+        </div>
+      </div>`
+    }).join('')}`
 }
 
 function selecionarAnimal(key) {
@@ -580,11 +759,14 @@ function renderTrilhasCompleto() {
     <h2 style="font-size:20px;font-weight:900;margin-bottom:20px">${animal.emoji} ${animal.nome}</h2>
     ${animal.trilhas.map((t,ti)=>{
       const licoesTrilha = t.licoes.map(i=>animal.licoes[i]).filter(Boolean)
+      const licoesOk = licoesTrilha.every(l=>prog.licoesFeitas.includes(l.id))
       const bloq = ti>0 && !trilhaCompleta(animal,ti-1)
+      const bloqPorRevisao = bloq && licoesOk === false ? false : (bloq && ti>=2 && !(prog.revisoesCruzadas[ti-1]?.aprovado))
       return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;${bloq?'opacity:0.45':''}">
         <div style="padding:14px 16px;display:flex;gap:12px;align-items:center;background:var(--surface2)">
           <div style="width:42px;height:42px;border-radius:10px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${t.icon}</div>
-          <div><div style="font-size:14px;font-weight:800">${t.nome}</div><div style="font-size:12px;color:var(--text2)">${t.desc}</div></div>
+          <div><div style="font-size:14px;font-weight:800">${t.nome}</div><div style="font-size:12px;color:var(--text2)">${t.desc}</div>
+          ${bloqPorRevisao?'<div style="font-size:11px;color:#fcd34d;margin-top:2px">🔀 Aguardando Revisão Cruzada da trilha anterior</div>':''}</div>
           ${bloq?'<span style="margin-left:auto;font-size:20px">🔒</span>':''}
         </div>
         <div style="padding:0 16px">
@@ -616,6 +798,7 @@ function navegarTela(id) {
   if (id==='home') renderHome()
   if (id==='perfil') renderPerfil()
   if (id==='trilhas') renderTrilhasCompleto()
+  if (id==='revisao') renderRevisaoTela()
   if (id==='ranking') {
     const r = document.getElementById('rank-xp')
     if (r) r.textContent = estado.xp+' XP'
